@@ -12,10 +12,9 @@
         "single_timeout": null,
         "total_time_limit": null,
         "token": null,
-        "run": null,
-        "run_command": [
-            "../aicup22/out/ai_cup_22"
-        ]
+        "run": {
+            "run_command": ["../aicup22/out/ai_cup_22"]
+        }
       }
     }
   ]
