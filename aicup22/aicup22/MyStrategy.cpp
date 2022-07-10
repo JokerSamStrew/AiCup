@@ -3,6 +3,7 @@
 #include "debugging/Color.hpp"
 #include <utility>
 #include <vector>
+#include <limits>
 
 MyStrategy::MyStrategy(const model::Constants &constants) {}
 
@@ -27,6 +28,22 @@ std::pair<const model::Unit*, std::vector<const model::Unit*>> getUnits(const mo
     }
 
     return std::pair(my_unit, other_units);
+}
+
+const model::Unit* closestUnit(const model::Vec2& point, const std::vector<const model::Unit*>& units)
+{
+   double minDistance = std::numeric_limits<double>::max(); 
+   const model::Unit* closestUnit = nullptr;
+   for (auto unit : units){
+       double distance = (point.x - unit->position.x)*(point.x - unit->position.x) + (point.x - unit->position.x)*(point.x - unit->position.x);
+       if (distance < minDistance)
+       {
+          minDistance = distance;
+          closestUnit = unit;
+       }
+   }
+
+   return closestUnit;
 }
 
 model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debugInterface)
@@ -54,7 +71,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
         std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
         auto currentCenterVec = getNextZoneCenterVec(game, *my_unit);
         auto currentDirection = model::Vec2(-my_unit->direction.y, my_unit->direction.x);
-        const auto& other_unit = units.second[0];
+        const auto& other_unit = closestUnit(units.first->position, units.second);
         model::UnitOrder order (currentCenterVec, {other_unit->position.x - my_unit->position.x, other_unit->position.y - my_unit->position.y}, action);
         actions.insert({my_unit->id, order});
     }
