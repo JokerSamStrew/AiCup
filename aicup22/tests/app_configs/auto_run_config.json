@@ -4,7 +4,8 @@
     "Create" : {
         "Override": {
             "preset": "Round1",
-            "bot_players": 0,
+            "bot_players": 1,
+            "extra_lives": 5,
             "continue_until": "AllDead",
             "initial_zone_radius" : 100
         }
