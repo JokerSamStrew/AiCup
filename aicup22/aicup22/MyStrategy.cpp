@@ -15,7 +15,7 @@ model::Vec2 getNextZoneCenterVec(const model::Game &game, const model::Unit& uni
 std::pair<const model::Unit*, std::vector<const model::Unit*>> getUnits(const model::Game &game)
 {
     std::vector<const model::Unit*> other_units;
-    const model::Unit* my_unit;
+    const model::Unit* my_unit = nullptr;
     for (auto &unit : game.units)
     {
         if (unit.playerId == game.myId)
@@ -48,11 +48,17 @@ const model::Unit* closestUnit(const model::Vec2& point, const std::vector<const
 
 model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debugInterface)
 {
+    auto units = getUnits(game);
     std::unordered_map<int, model::UnitOrder> actions;
-    const auto& units = getUnits(game);
-    for (auto &unit : units.second)
+    if (units.first == nullptr)
+        return model::Order(actions);
+
+    if (debugInterface != nullptr)
     {
-        debugInterface->addCircle(unit->position, 2, debugging::Color(0.0, 0.5, 0.0, 0.5));
+        for (auto &unit : units.second)
+        {
+            debugInterface->addCircle(unit->position, 2, debugging::Color(0.0, 0.5, 0.0, 0.5));
+        }
     }
 
     const auto& my_unit = units.first;
@@ -67,10 +73,10 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
     }
     else
     {
-        std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
-        std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
         auto currentCenterVec = getNextZoneCenterVec(game, *my_unit);
         auto currentDirection = model::Vec2(-my_unit->direction.y, my_unit->direction.x);
+        std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
+        std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
         const auto& other_unit = closestUnit(units.first->position, units.second);
         model::UnitOrder order (currentCenterVec, {other_unit->position.x - my_unit->position.x, other_unit->position.y - my_unit->position.y}, action);
         actions.insert({my_unit->id, order});
