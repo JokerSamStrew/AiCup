@@ -14,7 +14,9 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
         std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
         std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
 
-        model::UnitOrder order({-unit.position.x, -unit.position.y}, {-unit.direction.y, unit.direction.x}, action);
+        auto currentCenterVec = model::Vec2( game.zone.nextCenter.x - unit.position.x, game.zone.nextCenter.y - unit.position.y);
+
+        model::UnitOrder order(currentCenterVec, {-unit.direction.y, unit.direction.x}, action);
         actions.insert({unit.id, order});
     }
     return model::Order(actions);
