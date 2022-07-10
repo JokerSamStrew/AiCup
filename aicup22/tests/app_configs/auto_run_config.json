@@ -1,7 +1,14 @@
 {
-  "seed": 777,
+  "seed": 666,
   "game": {
-    "Create": "Round1"
+    "Create" : {
+        "Override": {
+            "preset": "Round1",
+            "bot_players": 0,
+            "continue_until": "AllDead",
+            "initial_zone_radius" : 100
+        }
+    }
   },
   "players": [
     {
