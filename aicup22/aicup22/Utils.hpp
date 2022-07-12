@@ -1,3 +1,6 @@
+#ifndef _UTILS_HPP_
+#define _UTILS_HPP_
+
 #include <utility>
 #include <model/Unit.hpp>
 #include <model/Game.hpp>
@@ -12,3 +15,5 @@ double countRange(const model::Vec2& a, const model::Vec2& b);
 void highlightUnits(const std::vector<const model::Unit*>& units, DebugInterface *debugInterface);
 
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit);
+
+#endif

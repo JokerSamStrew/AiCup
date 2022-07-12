@@ -5,11 +5,13 @@
 #include "model/Game.hpp"
 #include "model/Order.hpp"
 #include "model/Constants.hpp"
+#include "MyUnit.hpp"
 
 class MyStrategy {
 public:
     MyStrategy(const model::Constants& constants);
     model::Order getOrder(const model::Game& game, DebugInterface* debugInterface);
+    MyUnit myUnit;
     void debugUpdate(int displayedTick, DebugInterface& debugInterface);
     void finish();
 };
