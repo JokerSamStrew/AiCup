@@ -9,6 +9,7 @@ if(WIN32)
 endif()
 
 set(HEADERS
+    "Utils.hpp"
     "DebugInterface.hpp"
     "MyStrategy.hpp"
     "Stream.hpp"
@@ -41,6 +42,7 @@ set(HEADERS
     "model/Zone.hpp"
 )
 set (SRC
+    "Utils.cpp"
     "DebugInterface.cpp"
     "MyStrategy.cpp"
     "Stream.cpp"
