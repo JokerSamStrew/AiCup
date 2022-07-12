@@ -46,6 +46,18 @@ const model::Unit* closestUnit(const model::Vec2& point, const std::vector<const
    return closestUnit;
 }
 
+void highLightVisibleUnits(const std::vector<const model::Unit*>& units, DebugInterface *debugInterface)
+{
+    if (debugInterface != nullptr)
+    {
+        for (const auto &unit : units)
+        {
+            debugInterface->addCircle(unit->position, 2, debugging::Color(0.0, 0.5, 0.0, 0.5));
+        }
+    }
+}
+
+
 model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debugInterface)
 {
     auto units = getUnits(game);
@@ -53,21 +65,14 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
     if (units.first == nullptr)
         return model::Order(actions);
 
-    if (debugInterface != nullptr)
-    {
-        for (auto &unit : units.second)
-        {
-            debugInterface->addCircle(unit->position, 2, debugging::Color(0.0, 0.5, 0.0, 0.5));
-        }
-    }
+    highLightVisibleUnits(units.second, debugInterface);
 
     const auto& my_unit = units.first;
     if (units.second.empty())
     {
         auto currentCenterVec = getNextZoneCenterVec(game, *my_unit);
         auto currentDirection = model::Vec2(-my_unit->direction.y, my_unit->direction.x);
-        std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
-        std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
+        std::optional<std::shared_ptr<model::ActionOrder>> action;
         model::UnitOrder order(currentCenterVec, currentDirection, action);
         actions.insert({my_unit->id, order});
     }
