@@ -7,7 +7,7 @@
             "bot_players": 0,
             "extra_lives": 5,
             "continue_until": "AllDead",
-            "initial_zone_radius" : 1000
+            "initial_zone_radius" : 300
         }
     }
   },

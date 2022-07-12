@@ -57,3 +57,8 @@ model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit)
 {
     return model::Vec2( game.zone.nextCenter.x - unit.position.x, game.zone.nextCenter.y - unit.position.y);
 }
+
+model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b)
+{
+    return {a.x - b.x, a.y - b.y};
+}

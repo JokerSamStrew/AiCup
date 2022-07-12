@@ -16,4 +16,6 @@ void highlightUnits(const std::vector<const model::Unit*>& units, DebugInterface
 
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit);
 
+model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b);
+
 #endif
