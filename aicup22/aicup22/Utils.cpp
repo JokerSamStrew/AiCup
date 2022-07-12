@@ -44,13 +44,21 @@ const model::Unit* closestUnit(const model::Vec2& point, const std::vector<const
 
 void highlightUnits(const std::vector<const model::Unit*>& units, DebugInterface *debugInterface)
 {
-    if (debugInterface != nullptr)
+    if (debugInterface == nullptr)
+        return;
+
+    for (const auto &unit : units)
     {
-        for (const auto &unit : units)
-        {
-            debugInterface->addCircle(unit->position, 2, debugging::Color(0.0, 0.5, 0.0, 0.5));
-        }
+        debugInterface->addRing(unit->position, 2, 0.5, debugging::Color(0.0, 0.5, 0.0, 0.5));
     }
+}
+
+void drawDirectionArc(const model::Vec2& vec, double lineSize, DebugInterface *debugInterface)
+{
+   if (debugInterface == nullptr)
+       return;
+  
+   debugInterface->addArc(vec, lineSize, 10.0, 10.0, 10.0, debugging::Color(0.0, 0.0, 0.0, 1.0));
 }
 
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit)
