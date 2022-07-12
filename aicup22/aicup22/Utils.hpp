@@ -18,6 +18,6 @@ model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit);
 
 model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b);
 
-void drawDirectionArc(const model::Vec2& vec, double lineSize, DebugInterface *debugInterface);
+void drawDirectionArc(const model::Unit& unit, double lineSize, DebugInterface *debugInterface);
 
 #endif

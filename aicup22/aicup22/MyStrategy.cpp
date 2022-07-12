@@ -10,8 +10,6 @@ MyStrategy::MyStrategy(const model::Constants &constants) : myUnit(constants) {}
 
 model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debugInterface)
 {
-    drawDirectionArc({0,0}, 30.0, debugInterface); 
-
     myUnit.ClearActions();
     myUnit.setGame(&game, debugInterface);
     myUnit.AddFightClosestAction();

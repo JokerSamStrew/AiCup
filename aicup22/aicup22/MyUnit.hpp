@@ -12,7 +12,7 @@
 class MyUnit
 {
     private:
-        const model::Constants& _constants;
+        model::Constants _constants;
         const model::Unit* _my_unit;
         std::vector<const model::Unit*> _other_units;
         const model::Game* _game;

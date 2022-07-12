@@ -18,6 +18,9 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 
 void MyUnit::AddNoVisibleUnitsAction()
 {
+    if (_my_unit == nullptr)
+        return;
+
     if (!actions.empty())
         return;
 
@@ -30,10 +33,14 @@ void MyUnit::AddNoVisibleUnitsAction()
 
 double MyUnit::countWeaponRange()
 {
+    if (_my_unit == nullptr)
+        return 0.0;
+
     if (_my_unit->weapon.has_value())
     {
-        auto speed = _constants.weapons[_my_unit->weapon.value()].projectileSpeed;
-        auto time = _constants.weapons[_my_unit->weapon.value()].projectileLifeTime;
+        auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
+        auto speed = weapon_properties.projectileSpeed;
+        auto time = weapon_properties.projectileLifeTime;
         return speed * time;
     }
 
@@ -42,6 +49,9 @@ double MyUnit::countWeaponRange()
 
 void MyUnit::AddFightClosestAction()
 {
+    if (_my_unit == nullptr)
+        return;
+
     if (_other_units.empty())
         return;
     
@@ -49,16 +59,17 @@ void MyUnit::AddFightClosestAction()
     if (weapon_range == 0.0)
         return;
 
-
     auto other_unit = closestUnit(_my_unit->position, _other_units);
 
-    //if (countRange(_my_unit->position, other_unit->position) > weapon_range)
-        //return;
+    if (countRange(_my_unit->position, other_unit->position) > weapon_range)
+        return;
 
     std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
     std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
     auto currentCenterVec = getNextZoneCenter(*_game, *_my_unit);
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
+
+    drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
     model::UnitOrder order (currentCenterVec, vecDiff(other_unit->position, _my_unit->position), action);
     actions.insert({_my_unit->id, order});
 }

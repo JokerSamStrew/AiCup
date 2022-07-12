@@ -53,12 +53,15 @@ void highlightUnits(const std::vector<const model::Unit*>& units, DebugInterface
     }
 }
 
-void drawDirectionArc(const model::Vec2& vec, double lineSize, DebugInterface *debugInterface)
+void drawDirectionArc(const model::Unit& unit, double lineSize, DebugInterface *debugInterface)
 {
    if (debugInterface == nullptr)
        return;
-  
-   debugInterface->addArc(vec, lineSize, 10.0, 10.0, 10.0, debugging::Color(0.0, 0.0, 0.0, 1.0));
+
+   auto end_position = model::Vec2(
+           unit.position.x + lineSize * unit.direction.x,
+           unit.position.y + lineSize * unit.direction.y );
+   debugInterface->addPolyLine({unit.position, end_position}, 0.5, debugging::Color(0.0, 0.0, 1.0, 0.5));
 }
 
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit)
