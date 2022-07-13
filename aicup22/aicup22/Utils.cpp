@@ -137,3 +137,13 @@ const model::Obstacle* closestObstacle(const model::Vec2& point, const std::vect
 
    return closest_obs;
 }
+
+
+void highlightObstacle(const model::Obstacle& obstacle, DebugInterface *debugInterface)
+{
+
+    if (debugInterface == nullptr)
+        return;
+
+    debugInterface->addRing(obstacle.position, obstacle.radius + 1.0, 0.5, debugging::Color(1.0, 0.2, 0.0, 0.7));
+}

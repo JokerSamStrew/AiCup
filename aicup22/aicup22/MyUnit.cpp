@@ -32,12 +32,19 @@ void MyUnit::AddNoVisibleUnitsAction()
     if (!actions.empty())
         return;
 
-    auto currentCenterVec = getNextZoneCenter(*_game, *_my_unit);
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
     std::optional<std::shared_ptr<model::ActionOrder>> action;
-    model::UnitOrder order(currentCenterVec, currentDirection, action);
+    model::UnitOrder order(currentMoveVec(), currentDirection, action);
     actions.insert({_my_unit->id, order});
 }
+
+model::Vec2 MyUnit::currentMoveVec()
+{
+    //auto obs = getObstaclesInsideCircle(_available_obs, _my_unit.position, MOVE_RANGE);
+    //if (obs == nullptr)
+    return getNextZoneCenter(*_game, *_my_unit);
+}
+
 
 double MyUnit::countWeaponRange()
 {
@@ -74,11 +81,10 @@ void MyUnit::AddFightClosestAction()
 
     std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
     std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
-    auto currentCenterVec = getNextZoneCenter(*_game, *_my_unit);
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
 
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
-    model::UnitOrder order (currentCenterVec, vecDiff(other_unit->position, _my_unit->position), action);
+    model::UnitOrder order (currentMoveVec(), vecDiff(other_unit->position, _my_unit->position), action);
     actions.insert({_my_unit->id, order});
 }
 
