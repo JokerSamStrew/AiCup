@@ -9,7 +9,7 @@
 #include "model/Constants.hpp"
 #include <unordered_map>
 
-#define MOVE_RANGE 25.0
+#define MOVE_RANGE 20.0
 
 class MyUnit
 {

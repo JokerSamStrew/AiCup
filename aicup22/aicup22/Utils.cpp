@@ -30,7 +30,7 @@ std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vect
    double minDistance = std::numeric_limits<double>::max(); 
    std::optional<model::Unit> closestUnit;
    for (auto unit : units){
-       double distance = (point.x - unit.position.x)*(point.x - unit.position.x) + (point.x - unit.position.x)*(point.x - unit.position.x);
+       double distance = countRange(unit.position, point);
        if (distance < minDistance)
        {
           minDistance = distance;
@@ -127,7 +127,7 @@ std::optional<model::Obstacle> closestObstacle(const model::Vec2& point, const s
    double minDistance = std::numeric_limits<double>::max(); 
    std::optional<model::Obstacle> closest_obs;
    for (auto obs : obstacles){
-       double distance = (point.x - obs.position.x)*(point.x - obs.position.x) + (point.x - obs.position.x)*(point.x - obs.position.x);
+       double distance = countRange(obs.position, point);
        if (distance < minDistance)
        {
           minDistance = distance;
