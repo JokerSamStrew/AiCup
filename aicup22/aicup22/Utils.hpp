@@ -4,7 +4,8 @@
 #include <utility>
 #include <model/Unit.hpp>
 #include <model/Game.hpp>
-#include "DebugInterface.hpp"
+#include <model/Obstacle.hpp>
+#include <DebugInterface.hpp>
 
 std::pair<const model::Unit*, std::vector<const model::Unit*>> getUnits(const model::Game &game);
 
@@ -23,5 +24,11 @@ void drawDirectionArc(const model::Unit& unit, double lineSize, DebugInterface *
 model::Vec2 vecSum(const model::Vec2& a, const model::Vec2& b);
 
 void drawText(const model::Vec2& pos, const std::string& text, DebugInterface *debugInterface);
+
+void highlightObstacles(const std::vector<model::Obstacle>& obstacles, DebugInterface *debugInterface);
+
+bool isVecInsideCircle(const model::Vec2& circle, int rad, const model::Vec2& pos);
+
+std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, int rad);
 
 #endif

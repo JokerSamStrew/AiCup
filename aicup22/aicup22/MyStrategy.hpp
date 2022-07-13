@@ -8,6 +8,9 @@
 #include "MyUnit.hpp"
 
 class MyStrategy {
+private:
+    model::Constants _constants;
+
 public:
     MyStrategy(const model::Constants& constants);
     model::Order getOrder(const model::Game& game, DebugInterface* debugInterface);
