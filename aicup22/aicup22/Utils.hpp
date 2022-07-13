@@ -11,6 +11,8 @@ std::pair<const model::Unit*, std::vector<const model::Unit*>> getUnits(const mo
 
 const model::Unit* closestUnit(const model::Vec2& point, const std::vector<const model::Unit*>& units);
 
+const model::Obstacle* closestObstacle(const model::Vec2& point, const std::vector<model::Obstacle>& obstacles);
+
 double countRange(const model::Vec2& a, const model::Vec2& b);
 
 void highlightUnits(const std::vector<const model::Unit*>& units, DebugInterface *debugInterface);
@@ -27,8 +29,8 @@ void drawText(const model::Vec2& pos, const std::string& text, DebugInterface *d
 
 void highlightObstacles(const std::vector<model::Obstacle>& obstacles, DebugInterface *debugInterface);
 
-bool isVecInsideCircle(const model::Vec2& circle, int rad, const model::Vec2& pos);
+bool isVecInsideCircle(const model::Vec2& circle, double rad, const model::Vec2& pos);
 
-std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, int rad);
+std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, double rad);
 
 #endif

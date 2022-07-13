@@ -98,7 +98,7 @@ void highlightObstacles(const std::vector<model::Obstacle>& obstacles, DebugInte
     }
 }
 
-bool isVecInsideCircle(const model::Vec2& circle, int rad, const model::Vec2& pos)
+bool isVecInsideCircle(const model::Vec2& circle, double rad, const model::Vec2& pos)
 {
     // Compare radius of circle with distance
     // of its center from given point
@@ -109,7 +109,7 @@ bool isVecInsideCircle(const model::Vec2& circle, int rad, const model::Vec2& po
         return false;
 }
 
-std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, int rad)
+std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, double rad)
 {
     std::vector<model::Obstacle> result;
     for (auto obs : obstacles)
@@ -119,4 +119,21 @@ std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::O
     }
 
     return result;
+}
+
+
+const model::Obstacle* closestObstacle(const model::Vec2& point, const std::vector<model::Obstacle>& obstacles)
+{
+   double minDistance = std::numeric_limits<double>::max(); 
+   const model::Obstacle* closest_obs = nullptr;
+   for (auto obs : obstacles){
+       double distance = (point.x - obs.position.x)*(point.x - obs.position.x) + (point.x - obs.position.x)*(point.x - obs.position.x);
+       if (distance < minDistance)
+       {
+          minDistance = distance;
+          closest_obs = &obs;
+       }
+   }
+
+   return closest_obs;
 }

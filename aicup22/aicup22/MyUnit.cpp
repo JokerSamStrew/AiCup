@@ -4,12 +4,20 @@
 MyUnit::MyUnit(const model::Constants& constants)
     : _constants(constants)
 {
+    _available_obs = _constants.obstacles;
 }
 
 void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 {
     _game = game;
+
+    auto rad = _game->zone.currentRadius;
+    auto center = _game->zone.currentCenter;
+    _available_obs = getObstaclesInsideCircle(_available_obs, center, rad - 3.0);
+    highlightObstacles(_available_obs, debugInterface);
+
     auto units = getUnits(*_game);
+
     _my_unit = units.first;
     _other_units = units.second;
     _debugInterface = debugInterface;

@@ -15,6 +15,7 @@ class MyUnit
         model::Constants _constants;
         const model::Unit* _my_unit;
         std::vector<const model::Unit*> _other_units;
+        std::vector<model::Obstacle> _available_obs;
         const model::Game* _game;
         std::unordered_map<int, model::UnitOrder> actions;
         DebugInterface* _debugInterface;
