@@ -9,15 +9,15 @@
 #include "model/Constants.hpp"
 #include <unordered_map>
 
-#define MOVE_RANGE 10.0
+#define MOVE_RANGE 25.0
 
 class MyUnit
 {
     private:
         model::Constants _constants;
         model::Vec2 currentMoveVec();
-        const model::Unit* _my_unit;
-        std::vector<const model::Unit*> _other_units;
+        std::optional<model::Unit> _my_unit;
+        std::vector<model::Unit> _other_units;
         std::vector<model::Obstacle> _available_obs;
         const model::Game* _game;
         std::unordered_map<int, model::UnitOrder> actions;

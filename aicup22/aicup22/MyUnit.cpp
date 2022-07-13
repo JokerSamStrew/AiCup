@@ -4,7 +4,10 @@
 MyUnit::MyUnit(const model::Constants& constants)
     : _constants(constants)
 {
-    _available_obs = _constants.obstacles;
+    for (auto obs : _constants.obstacles){
+        if (!obs.canShootThrough)
+            _available_obs.push_back(obs);
+    }
 }
 
 void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
@@ -14,7 +17,6 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
     auto rad = _game->zone.currentRadius;
     auto center = _game->zone.currentCenter;
     _available_obs = getObstaclesInsideCircle(_available_obs, center, rad - 3.0);
-    highlightObstacles(_available_obs, debugInterface);
 
     auto units = getUnits(*_game);
 
@@ -26,9 +28,6 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 
 void MyUnit::AddNoVisibleUnitsAction()
 {
-    if (_my_unit == nullptr)
-        return;
-
     if (!actions.empty())
         return;
 
@@ -40,17 +39,21 @@ void MyUnit::AddNoVisibleUnitsAction()
 
 model::Vec2 MyUnit::currentMoveVec()
 {
-    //auto obs = getObstaclesInsideCircle(_available_obs, _my_unit.position, MOVE_RANGE);
-    //if (obs == nullptr)
-    return getNextZoneCenter(*_game, *_my_unit);
+    auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, MOVE_RANGE);
+    highlightObstacles(obs, _debugInterface);
+    if (obs.empty())
+        return getNextZoneCenter(*_game, *_my_unit);
+
+    auto center = _game->zone.nextCenter;
+    auto closest_obs = closestObstacle(center, obs).value(); 
+    highlightObstacle(closest_obs, _debugInterface);
+
+    return vecDiff(closest_obs.position, _my_unit->position);
 }
 
 
 double MyUnit::countWeaponRange()
 {
-    if (_my_unit == nullptr)
-        return 0.0;
-
     if (_my_unit->weapon.has_value())
     {
         auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
@@ -64,9 +67,6 @@ double MyUnit::countWeaponRange()
 
 void MyUnit::AddFightClosestAction()
 {
-    if (_my_unit == nullptr)
-        return;
-
     if (_other_units.empty())
         return;
     
