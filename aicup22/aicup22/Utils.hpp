@@ -20,4 +20,8 @@ model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b);
 
 void drawDirectionArc(const model::Unit& unit, double lineSize, DebugInterface *debugInterface);
 
+model::Vec2 vecSum(const model::Vec2& a, const model::Vec2& b);
+
+void drawText(const model::Vec2& pos, const std::string& text, DebugInterface *debugInterface);
+
 #endif

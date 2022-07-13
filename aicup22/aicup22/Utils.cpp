@@ -41,7 +41,6 @@ const model::Unit* closestUnit(const model::Vec2& point, const std::vector<const
    return closestUnit;
 }
 
-
 void highlightUnits(const std::vector<const model::Unit*>& units, DebugInterface *debugInterface)
 {
     if (debugInterface == nullptr)
@@ -72,4 +71,17 @@ model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit)
 model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b)
 {
     return {a.x - b.x, a.y - b.y};
+}
+
+model::Vec2 vecSum(const model::Vec2& a, const model::Vec2& b)
+{
+    return {a.x + b.x, a.y + b.y};
+}
+
+void drawText(const model::Vec2& pos, const std::string& text, DebugInterface *debugInterface)
+{
+    if (debugInterface == 0)
+        return;
+
+    debugInterface->addPlacedText(pos, text, {2.0, 2.0}, 3.0, {0.0, 0.0, 0.0, 1.0});
 }
