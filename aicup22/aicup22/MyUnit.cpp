@@ -93,8 +93,12 @@ model::Order MyUnit::CreateOrder()
     return model::Order(actions);
 }
 
+void MyUnit::AddGetShieldAction()
+{
+}
 
 void MyUnit::ClearActions() 
 { 
     actions.clear();
 }
+

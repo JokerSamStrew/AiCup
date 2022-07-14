@@ -28,6 +28,7 @@ class MyUnit
         void setGame(const model::Game* game, DebugInterface* debugInterface);
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
+        void AddGetShieldAction();
         model::Order CreateOrder();
         void ClearActions();
 };
