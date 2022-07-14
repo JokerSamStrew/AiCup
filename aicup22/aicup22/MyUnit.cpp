@@ -11,6 +11,37 @@ MyUnit::MyUnit(const model::Constants& constants)
     }
 }
 
+void MyUnit::setLoot()
+{
+
+    _shield_potions.clear();
+    _weapons.clear();
+    _ammo.clear();
+
+    for (auto l : _game->loot)
+    {
+        if (!isVecInsideCircle(_my_unit->position, MOVE_RANGE, l.position))
+            continue;
+
+        if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
+        {
+            _shield_potions.push_back(l);
+        }
+        else if (const auto* item = std::get_if<model::Weapon>(&l.item))
+        {
+            _weapons.push_back(l);
+        }
+        else if (const auto* item = std::get_if<model::Ammo>(&l.item))
+        {
+            _ammo.push_back(l);
+        }
+    }
+
+    highlightLoot(_shield_potions, _debugInterface, 1);
+    highlightLoot(_ammo, _debugInterface, 2);
+    highlightLoot(_weapons, _debugInterface, 3);
+}
+
 void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 {
     _game = game;
@@ -24,6 +55,8 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
     _my_unit = units.first;
     _other_units = units.second;
     _debugInterface = debugInterface;
+
+    setLoot();
     highlightUnits(_other_units, _debugInterface);
 }
 
@@ -95,14 +128,9 @@ model::Order MyUnit::CreateOrder()
 
 void MyUnit::AddGetShieldAction()
 {
-    std::vector<model::Loot> shields;
-    for (auto l : _game->loot)
-    {
-        if(const auto* item = std::get_if<model::ShieldPotions>(&l.item))
-            shields.push_back(l);
-    }
+    if (!actions.empty())
+        return;
 
-    highlightLoot(shields, _debugInterface);
 }
 
 void MyUnit::ClearActions() 

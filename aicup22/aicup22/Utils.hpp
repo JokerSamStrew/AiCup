@@ -11,13 +11,15 @@ std::pair<std::optional<model::Unit>, std::vector<model::Unit>> getUnits(const m
 
 std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vector<model::Unit>& units);
 
+std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vector<model::Unit>& units);
+
 std::optional<model::Obstacle> closestObstacle(const model::Vec2& point, const std::vector<model::Obstacle>& obstacles);
 
 double countRange(const model::Vec2& a, const model::Vec2& b);
 
 void highlightUnits(std::vector<model::Unit>& units, DebugInterface *debugInterface);
 
-void highlightLoot(const std::vector<model::Loot>& units, DebugInterface *debugInterface);
+void highlightLoot(const std::vector<model::Loot>& loot, DebugInterface *debugInterface, int type);
 
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit);
 

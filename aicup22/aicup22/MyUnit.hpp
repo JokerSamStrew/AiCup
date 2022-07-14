@@ -14,6 +14,10 @@
 class MyUnit
 {
     private:
+        std::vector<model::Loot> _shield_potions;
+        std::vector<model::Loot> _weapons;
+        std::vector<model::Loot> _ammo;
+
         model::Constants _constants;
         model::Vec2 currentMoveVec();
         std::optional<model::Unit> _my_unit;
@@ -23,6 +27,7 @@ class MyUnit
         std::unordered_map<int, model::UnitOrder> actions;
         DebugInterface* _debugInterface;
         double countWeaponRange();
+        void setLoot();
     public:
         MyUnit(const model::Constants& constants);
         void setGame(const model::Game* game, DebugInterface* debugInterface);
