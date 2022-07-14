@@ -112,6 +112,9 @@ void MyUnit::AddFightClosestAction()
     if (weapon_range == 0.0)
         return;
 
+    if (_my_unit->ammo[_my_unit->weapon.value()] == 0)
+        return;
+
     auto other_unit = closestUnit(_my_unit->position, _other_units);
 
     if (countRange(_my_unit->position, other_unit->position) > weapon_range)
