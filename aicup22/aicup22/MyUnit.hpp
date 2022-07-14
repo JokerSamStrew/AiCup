@@ -35,6 +35,7 @@ class MyUnit
         void AddFightClosestAction();
         void AddGetShieldAction();
         void AddUseShieldAction();
+        void AddGetAmmoAction();
         void AddGetWeaponAction();
         model::Order CreateOrder();
         void ClearActions();
