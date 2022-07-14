@@ -33,7 +33,7 @@ void MyUnit::AddNoVisibleUnitsAction()
         return;
 
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
-    std::optional<std::shared_ptr<model::ActionOrder>> action;
+    std::optional<model::ActionOrder> action;
     model::UnitOrder order(currentMoveVec(), currentDirection, action);
     actions.insert({_my_unit->id, order});
 }
@@ -80,12 +80,11 @@ void MyUnit::AddFightClosestAction()
     if (countRange(_my_unit->position, other_unit->position) > weapon_range)
         return;
 
-    std::shared_ptr<model::ActionOrder::Aim> aim = std::make_shared<model::ActionOrder::Aim>(true);
-    std::optional<std::shared_ptr<model::ActionOrder>> action = std::make_optional(aim);
+    auto aim = model::Aim(true);
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
 
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
-    model::UnitOrder order (currentMoveVec(), vecDiff(other_unit->position, _my_unit->position), action);
+    model::UnitOrder order (currentMoveVec(), vecDiff(other_unit->position, _my_unit->position), std::make_optional<model::Aim>(aim));
     actions.insert({_my_unit->id, order});
 }
 
@@ -99,14 +98,10 @@ void MyUnit::AddGetShieldAction()
     std::vector<model::Loot> shields;
     for (auto l : _game->loot)
     {
-        auto item = (model::Item::Weapon*)(l.item.get());
-        if (item->TAG == 1)
-        {
+        if(const auto* item = std::get_if<model::ShieldPotions>(&l.item))
             shields.push_back(l);
-        }
     }
 
-    // highlightLoot(_game->loot, _debugInterface);
     highlightLoot(shields, _debugInterface);
 }
 
