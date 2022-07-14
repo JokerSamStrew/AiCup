@@ -34,6 +34,7 @@ class MyUnit
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
         void AddGetShieldAction();
+        void AddUseShieldAction();
         model::Order CreateOrder();
         void ClearActions();
 };

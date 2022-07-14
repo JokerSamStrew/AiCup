@@ -138,6 +138,21 @@ std::optional<model::Obstacle> closestObstacle(const model::Vec2& point, const s
    return closest_obs;
 }
 
+std::optional<model::Loot> closestLoot(const model::Vec2& point, const std::vector<model::Loot>& loot)
+{
+   double minDistance = std::numeric_limits<double>::max(); 
+   std::optional<model::Loot> closest_loot;
+   for (auto l : loot){
+       double distance = countRange(l.position, point);
+       if (distance < minDistance)
+       {
+          minDistance = distance;
+          closest_loot = l;
+       }
+   }
+
+   return closest_loot;
+}
 
 void highlightObstacle(const model::Obstacle& obstacle, DebugInterface *debugInterface)
 {

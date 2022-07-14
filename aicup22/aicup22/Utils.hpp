@@ -39,4 +39,6 @@ std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::O
 
 void highlightObstacle(const model::Obstacle& obstacle, DebugInterface *debugInterface);
 
+std::optional<model::Loot> closestLoot(const model::Vec2& point, const std::vector<model::Loot>& loot);
+
 #endif

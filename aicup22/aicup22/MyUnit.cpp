@@ -20,7 +20,11 @@ void MyUnit::setLoot()
 
     for (auto l : _game->loot)
     {
+
         if (!isVecInsideCircle(_my_unit->position, MOVE_RANGE, l.position))
+            continue;
+
+        if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, l.position))
             continue;
 
         if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
@@ -114,7 +118,6 @@ void MyUnit::AddFightClosestAction()
         return;
 
     auto aim = model::Aim(true);
-    auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
 
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
     model::UnitOrder order (currentMoveVec(), vecDiff(other_unit->position, _my_unit->position), std::make_optional<model::Aim>(aim));
@@ -131,6 +134,33 @@ void MyUnit::AddGetShieldAction()
     if (!actions.empty())
         return;
 
+    if (_my_unit->shieldPotions == _constants.maxShieldPotionsInInventory)
+        return;
+
+    auto closest_shield = closestLoot(_my_unit->position, _shield_potions);
+    if (!closest_shield.has_value())
+        return;
+
+    auto loot_pos = closest_shield.value().position;
+    auto diff_vec = vecDiff(loot_pos, _my_unit->position);
+    model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_shield->id)));
+    actions.insert({_my_unit->id, order});
+}
+
+void MyUnit::AddUseShieldAction()
+{
+    if (!actions.empty())
+        return;
+
+    if (_my_unit->shieldPotions == 0)
+        return;
+
+    if (_my_unit->shield == _constants.maxShield )
+        return;
+
+    auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
+    model::UnitOrder order (currentMoveVec(), currentDirection, std::make_optional<model::UseShieldPotion>(model::UseShieldPotion()));
+    actions.insert({_my_unit->id, order});
 }
 
 void MyUnit::ClearActions() 
