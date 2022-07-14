@@ -24,7 +24,7 @@ void MyUnit::setLoot()
         if (!isVecInsideCircle(_my_unit->position, MOVE_RANGE, l.position))
             continue;
 
-        if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, l.position))
+        if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius * EDGE_COEF, l.position))
             continue;
 
         if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
@@ -50,9 +50,9 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 {
     _game = game;
 
-    auto rad = _game->zone.currentRadius;
+    auto rad = _game->zone.currentRadius * EDGE_COEF;
     auto center = _game->zone.currentCenter;
-    _available_obs = getObstaclesInsideCircle(_available_obs, center, rad - 3.0);
+    _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
 
     auto units = getUnits(*_game);
 

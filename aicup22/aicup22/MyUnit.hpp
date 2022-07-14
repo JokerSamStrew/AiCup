@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #define MOVE_RANGE 20.0
+#define EDGE_COEF 0.91
 
 class MyUnit
 {
