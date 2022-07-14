@@ -10,7 +10,8 @@
 #include <unordered_map>
 
 #define MOVE_RANGE 20.0
-#define EDGE_COEF 0.91
+#define SOUND_RANGE 10.0
+#define EDGE_COEF 0.85
 
 class MyUnit
 {
@@ -35,6 +36,7 @@ class MyUnit
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
         void AddGetShieldAction();
+        void AddSoundAction();
         void AddUseShieldAction();
         void AddGetAmmoAction();
         void AddGetWeaponAction();

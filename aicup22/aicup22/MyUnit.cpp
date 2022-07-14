@@ -46,6 +46,22 @@ void MyUnit::setLoot()
     highlightLoot(_weapons, _debugInterface, 3);
 }
 
+void MyUnit::AddSoundAction()
+{
+    if (!actions.empty() || _game->sounds.empty())
+        return;
+  
+    for (auto s : _game->sounds)
+    {
+        if (isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
+        {
+            AddNoVisibleUnitsAction();
+            return;
+        }
+    }
+
+}
+
 void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 {
     _game = game;
@@ -105,6 +121,9 @@ double MyUnit::countWeaponRange()
 
 void MyUnit::AddFightClosestAction()
 {
+    if (!actions.empty())
+        return;
+
     if (_other_units.empty())
         return;
     
