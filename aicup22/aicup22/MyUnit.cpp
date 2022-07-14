@@ -150,6 +150,34 @@ void MyUnit::AddGetShieldAction()
     actions.insert({_my_unit->id, order});
 }
 
+void MyUnit::AddGetWeaponAction()
+{
+    if (!actions.empty())
+        return;
+
+    std::vector<model::Loot> prior_weapons;
+
+    for (auto wp : _weapons){
+        auto weapon = std::get<model::Weapon>(wp.item);
+        if (weapon.typeIndex <= _my_unit->weapon.value_or(9999999999))
+            continue;
+
+        if (_my_unit->ammo[weapon.typeIndex] == 0)
+            continue;
+
+        prior_weapons.push_back(wp);
+    }
+
+    auto closest_weapon = closestLoot(_my_unit->position, prior_weapons);
+    if (!closest_weapon.has_value())
+        return;
+
+    auto loot_pos = closest_weapon.value().position;
+    auto diff_vec = vecDiff(loot_pos, _my_unit->position);
+    model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_weapon->id)));
+    actions.insert({_my_unit->id, order});
+}
+
 void MyUnit::AddUseShieldAction()
 {
     if (!actions.empty())

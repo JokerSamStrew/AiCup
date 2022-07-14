@@ -15,6 +15,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
     myUnit.AddFightClosestAction();
     myUnit.AddUseShieldAction();
     myUnit.AddGetShieldAction();
+    myUnit.AddGetWeaponAction();
     myUnit.AddNoVisibleUnitsAction();
     return myUnit.CreateOrder();
 }
