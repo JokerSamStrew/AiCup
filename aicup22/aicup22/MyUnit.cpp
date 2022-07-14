@@ -113,7 +113,7 @@ double MyUnit::countWeaponRange()
         auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
         auto speed = weapon_properties.projectileSpeed;
         auto time = weapon_properties.projectileLifeTime;
-        return speed * time;
+        return speed * time * WEAPON_COEF;
     }
 
     return 0.0;
