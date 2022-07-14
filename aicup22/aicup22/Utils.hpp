@@ -17,6 +17,8 @@ double countRange(const model::Vec2& a, const model::Vec2& b);
 
 void highlightUnits(std::vector<model::Unit>& units, DebugInterface *debugInterface);
 
+void highlightLoot(const std::vector<model::Loot>& units, DebugInterface *debugInterface);
+
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit);
 
 model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b);

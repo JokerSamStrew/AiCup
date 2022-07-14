@@ -13,6 +13,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
     myUnit.ClearActions();
     myUnit.setGame(&game, debugInterface);
     myUnit.AddFightClosestAction();
+    myUnit.AddGetShieldAction();
     myUnit.AddNoVisibleUnitsAction();
     return myUnit.CreateOrder();
 }

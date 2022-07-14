@@ -1,5 +1,6 @@
 #include "MyUnit.hpp"
 #include "Utils.hpp"
+#include <memory>
 
 MyUnit::MyUnit(const model::Constants& constants)
     : _constants(constants)
@@ -95,6 +96,18 @@ model::Order MyUnit::CreateOrder()
 
 void MyUnit::AddGetShieldAction()
 {
+    std::vector<model::Loot> shields;
+    for (auto l : _game->loot)
+    {
+        auto item = (model::Item::Weapon*)(l.item.get());
+        if (item->TAG == 1)
+        {
+            shields.push_back(l);
+        }
+    }
+
+    // highlightLoot(_game->loot, _debugInterface);
+    highlightLoot(shields, _debugInterface);
 }
 
 void MyUnit::ClearActions() 

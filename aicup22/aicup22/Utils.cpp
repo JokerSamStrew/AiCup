@@ -147,3 +147,14 @@ void highlightObstacle(const model::Obstacle& obstacle, DebugInterface *debugInt
 
     debugInterface->addRing(obstacle.position, obstacle.radius + 1.0, 0.5, debugging::Color(1.0, 0.2, 0.0, 0.7));
 }
+
+void highlightLoot(const std::vector<model::Loot>& loot, DebugInterface *debugInterface)
+{
+    if (debugInterface == nullptr)
+        return;
+
+    for (const auto l : loot)
+    {
+        debugInterface->addRing(l.position, 0.7, 0.3, debugging::Color(0.2, 0.2, 1.0, 0.4));
+    }
+}
