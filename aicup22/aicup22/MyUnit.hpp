@@ -14,9 +14,10 @@
 #define PICKUP_RANGE 10.0
 #define SOUND_RANGE 10.0
 #define EDGE_COEF 0.85
-#define WEAPON_COEF 0.85 
+#define WEAPON_COEF 0.65 
 #define MOVE_COEF 100000.0 
 #define CLOSE_TO_REACH 0.5 
+#define MIN_EDGE_RAD 5.0
 
 class MyUnit
 {

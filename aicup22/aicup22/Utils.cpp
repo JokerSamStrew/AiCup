@@ -196,3 +196,24 @@ void highlightLoot(const std::vector<model::Loot>& loot, DebugInterface *debugIn
 
     }
 }
+
+bool isAimInObs(const model::Vec2& pos1, const model::Vec2& pos2, const std::vector<model::Obstacle>& obstacles)
+{
+    for (auto obs : obstacles)
+    {
+        if (isAimInObs(pos1, pos2, obs)) 
+            return true;
+    }
+
+    return false;
+}
+
+bool isAimInObs(const model::Vec2& pos1, const model::Vec2& pos2, const model::Obstacle& obs)
+{
+    auto a = 1 / (pos2.x - pos1.x);
+    auto b = - 1 / (pos2.y - pos1.y);
+    auto c = - pos1.x / (pos2.x - pos1.x) + pos1.y / (pos2.y - pos1.y); 
+    auto d = ( a * obs.position.x + b * obs.position.y + c ) / sqrt(a*a + b*b);
+    d = d < 0 ? -d : d;
+    return d < obs.radius - 0.01;
+}

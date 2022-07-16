@@ -45,4 +45,8 @@ void highlightObstacle(const model::Obstacle& obstacle, DebugInterface *debugInt
 
 std::optional<model::Loot> closestLoot(const model::Vec2& point, const std::vector<model::Loot>& loot);
 
+bool isAimInObs(const model::Vec2& pos1, const model::Vec2& pos2, const model::Obstacle& obs);
+
+bool isAimInObs(const model::Vec2& pos1, const model::Vec2& pos2, const std::vector<model::Obstacle>& obstacles);
+
 #endif

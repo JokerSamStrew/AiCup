@@ -66,7 +66,7 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 {
     _game = game;
 
-    auto rad = _game->zone.currentRadius * EDGE_COEF - 5.0;
+    auto rad = _game->zone.currentRadius * EDGE_COEF - MIN_EDGE_RAD;
     auto center = _game->zone.currentCenter;
     _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
 
@@ -96,6 +96,7 @@ model::Vec2 MyUnit::currentMoveVec()
     auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, MOVE_RANGE);
     auto center_point_radius = _game->zone.nextRadius * CLOSE_TO_REACH;
     auto center = _game->zone.nextCenter;
+
     obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
     if (obs.empty())
         return getNextZoneCenter(*_game, *_my_unit);
@@ -169,10 +170,27 @@ void MyUnit::AddFightClosestAction()
     if (_my_unit->aim < 1)
         time += weapon_properties.aimTime;
 
-    auto aim = model::Aim(true);
+    time *= WEAPON_COEF;
+
     auto direction = vecDiff(other_unit->position, _my_unit->position);
     direction = vecSum(direction, {other_unit->velocity.x * time, other_unit->velocity.y * time});
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
+
+    auto obs = removeObstaclesInsideCircle(_available_obs, _my_unit->position, unit_range + 0.6);
+    auto aim_pos = vecSum(_my_unit->position, model::Vec2( _my_unit->direction.x * unit_range, _my_unit->direction.y * unit_range ));
+
+    if (_debugInterface != nullptr)
+    {
+        auto vertices = std::vector<model::Vec2>();
+        vertices.push_back(_my_unit->position);
+        vertices.push_back(aim_pos);
+        _debugInterface->addPolyLine(vertices, 0.2, debugging::Color(0.0, 0.6, 0.0, 1.0)); 
+    }
+
+    auto aim = model::Aim(true);
+    if (isAimInObs(_my_unit->position, aim_pos, obs))
+        aim = model::Aim(false);
+
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
     actions.insert({_my_unit->id, order});
 }
