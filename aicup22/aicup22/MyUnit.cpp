@@ -64,6 +64,7 @@ void MyUnit::AddSoundAction()
 
 void MyUnit::setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface)
 {
+
     _game = game;
 
     auto rad = _game->zone.currentRadius * EDGE_COEF - MIN_EDGE_RAD;
@@ -71,6 +72,7 @@ void MyUnit::setGame(const model::Game* game, const model::Unit& my_unit, const 
     _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
 
     _my_unit = my_unit;
+    ID = my_unit.id;
     _other_units = other_units;
     _debugInterface = debugInterface;
 

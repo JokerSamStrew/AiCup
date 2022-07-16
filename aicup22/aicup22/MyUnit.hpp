@@ -22,7 +22,6 @@
 class MyUnit
 {
     private:
-        int ID;
         std::vector<model::Loot> _shield_potions;
         std::vector<model::Loot> _weapons;
         std::vector<model::Loot> _ammo;
@@ -41,6 +40,7 @@ class MyUnit
         double countWeaponRange();
         void setLoot();
     public:
+        std::optional<int> ID;
         MyUnit(const model::Constants& constants);
         void setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface);
         void AddNoVisibleUnitsAction();
