@@ -136,13 +136,21 @@ void MyUnit::AddFightClosestAction()
 
     auto other_unit = closestUnit(_my_unit->position, _other_units);
 
-    if (countRange(_my_unit->position, other_unit->position) > weapon_range)
+    auto unit_range = countRange(_my_unit->position, other_unit->position);
+    if (unit_range > weapon_range)
         return;
 
-    auto aim = model::Aim(true);
+    auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
+    auto speed = weapon_properties.projectileSpeed;
+    auto time = unit_range / speed; 
+    if (_my_unit->aim < 1)
+        time += weapon_properties.aimTime;
 
+    auto aim = model::Aim(true);
+    auto direction = vecDiff(other_unit->position, _my_unit->position);
+    direction = vecSum(direction, {other_unit->velocity.x * time, other_unit->velocity.y * time});
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
-    model::UnitOrder order (currentMoveVec(), vecDiff(other_unit->position, _my_unit->position), std::make_optional<model::Aim>(aim));
+    model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
     actions.insert({_my_unit->id, order});
 }
 

@@ -12,7 +12,7 @@
 #define MOVE_RANGE 20.0
 #define SOUND_RANGE 10.0
 #define EDGE_COEF 0.85
-#define WEAPON_COEF 0.45 
+#define WEAPON_COEF 0.85 
 
 class MyUnit
 {
