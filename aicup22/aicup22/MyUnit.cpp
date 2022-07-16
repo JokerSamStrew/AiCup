@@ -29,6 +29,9 @@ void MyUnit::setLoot()
         if (_second_unit.has_value() && isVecInsideCircle(_second_unit->position, PICKUP_RANGE, l.position))
             continue;
 
+        if (_second_unit.has_value() && isVecInsideCircle(_game->zone.nextCenter, _game->zone.nextRadius * CLOSE_TO_REACH, l.position))
+            continue;
+
         if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
         {
             _shield_potions.push_back(l);
