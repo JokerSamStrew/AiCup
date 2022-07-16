@@ -83,7 +83,7 @@ void drawText(const model::Vec2& pos, const std::string& text, DebugInterface *d
     if (debugInterface == 0)
         return;
 
-    debugInterface->addPlacedText(pos, text, {2.0, 2.0}, 3.0, {0.0, 0.0, 0.0, 1.0});
+    debugInterface->addPlacedText(pos, text, {0.0, 0.0}, 0.4, {0.2, 0.2, 0.2, 1.0});
 }
 
 void highlightObstacles(const std::vector<model::Obstacle>& obstacles, DebugInterface *debugInterface)

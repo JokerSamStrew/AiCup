@@ -175,16 +175,17 @@ void MyUnit::AddGetWeaponAction()
         return;
 
     std::vector<model::Loot> prior_weapons;
+    drawText(_my_unit->position, std::to_string(_my_unit->weapon.value_or(-1)), _debugInterface);
 
     for (auto wp : _weapons){
         auto weapon = std::get<model::Weapon>(wp.item);
-        if (weapon.typeIndex <= _my_unit->weapon.value_or(9999999999))
-            continue;
+        drawText(wp.position, std::to_string(weapon.typeIndex), _debugInterface);
 
         if (_my_unit->ammo[weapon.typeIndex] == 0)
             continue;
 
-        prior_weapons.push_back(wp);
+        if (weapon.typeIndex > _my_unit->weapon.value_or(-1))
+            prior_weapons.push_back(wp);
     }
 
     auto closest_weapon = closestLoot(_my_unit->position, prior_weapons);
@@ -218,10 +219,12 @@ void MyUnit::AddGetAmmoAction()
     if (!actions.empty())
         return;
 
+    drawText(_my_unit->position, std::to_string(_my_unit->weapon.value_or(-1)), _debugInterface);
     std::vector<model::Loot> prior_ammo;
 
     for (auto a : _ammo){
         auto ammo = std::get<model::Ammo>(a.item);
+        drawText(a.position, std::to_string(ammo.weaponTypeIndex), _debugInterface);
         if (_my_unit->ammo[ammo.weaponTypeIndex] == _constants.weapons[ammo.weaponTypeIndex].maxInventoryAmmo )
             continue;
 
