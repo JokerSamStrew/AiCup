@@ -27,6 +27,9 @@ void MyUnit::setLoot()
         if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius * EDGE_COEF, l.position))
             continue;
 
+        if (_second_unit.has_value() && !isVecInsideCircle(_second_unit->position, PICKUP_RANGE, l.position))
+            continue;
+
         if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
         {
             _shield_potions.push_back(l);
@@ -96,6 +99,9 @@ model::Vec2 MyUnit::currentMoveVec()
     auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, MOVE_RANGE);
     auto center_point_radius = _game->zone.nextRadius * CLOSE_TO_REACH;
     auto center = _game->zone.nextCenter;
+
+    if (_second_unit.has_value())
+        obs = removeObstaclesInsideCircle(obs, _second_unit->position, MOVE_RANGE);
 
     obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
     if (obs.empty())
@@ -290,6 +296,12 @@ void MyUnit::AddGetAmmoAction()
     _actions.insert({_my_unit->id, order});
 }
 
+
+void MyUnit::setSecondUnit(const std::optional<model::Unit>& unit)
+{
+    if (unit.has_value())
+        _second_unit = unit.value();
+}
 
 void MyUnit::ClearActions() 
 { 

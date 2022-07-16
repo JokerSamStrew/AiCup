@@ -32,6 +32,7 @@ class MyUnit
         model::Constants _constants;
         model::Vec2 currentMoveVec();
         std::optional<model::Unit> _my_unit;
+        std::optional<model::Unit> _second_unit;
         std::vector<model::Unit> _other_units;
         std::vector<model::Obstacle> _available_obs;
         const model::Game* _game;
@@ -42,6 +43,7 @@ class MyUnit
     public:
         std::optional<int> ID;
         MyUnit(const model::Constants& constants);
+        void setSecondUnit(const std::optional<model::Unit>& unit);
         void setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface);
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();

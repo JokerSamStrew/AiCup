@@ -28,6 +28,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
             myFirstUnit.AddGetAmmoAction();
             myFirstUnit.AddGetWeaponAction();
             myFirstUnit.AddNoVisibleUnitsAction();
+            mySecondUnit.setSecondUnit(my_unit);
             for (auto action : myFirstUnit.GetActions())
                 actions.insert(action);
         }
@@ -42,6 +43,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
             mySecondUnit.AddGetAmmoAction();
             mySecondUnit.AddGetWeaponAction();
             mySecondUnit.AddNoVisibleUnitsAction();
+            mySecondUnit.setSecondUnit(my_unit);
             for (auto action : mySecondUnit.GetActions())
                 actions.insert(action);
         }
