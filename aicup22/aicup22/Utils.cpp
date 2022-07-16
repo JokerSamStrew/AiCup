@@ -2,22 +2,22 @@
 #include <limits>
 #include <cmath>
 
-std::pair<std::optional<model::Unit>, std::vector<model::Unit>> getUnits(const model::Game &game)
+std::pair<std::vector<model::Unit>, std::vector<model::Unit>> getUnits(const model::Game &game)
 {
     std::vector<model::Unit> other_units;
-    std::optional<model::Unit> my_unit;
+    std::vector<model::Unit> my_units;
     for (auto &unit : game.units)
     {
         if (unit.playerId == game.myId)
         {
-            my_unit = unit;
+            my_units.push_back(unit);
             continue;
         }
         
         other_units.push_back(unit);
     }
 
-    return std::pair(my_unit, other_units);
+    return std::pair(my_units, other_units);
 }
 
 double countRange(const model::Vec2& a, const model::Vec2& b)

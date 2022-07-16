@@ -48,7 +48,7 @@ void MyUnit::setLoot()
 
 void MyUnit::AddSoundAction()
 {
-    if (!actions.empty() || _game->sounds.empty())
+    if (!_actions.empty() || _game->sounds.empty())
         return;
   
     for (auto s : _game->sounds)
@@ -62,7 +62,7 @@ void MyUnit::AddSoundAction()
 
 }
 
-void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
+void MyUnit::setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface)
 {
     _game = game;
 
@@ -70,10 +70,8 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
     auto center = _game->zone.currentCenter;
     _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
 
-    auto units = getUnits(*_game);
-
-    _my_unit = units.first;
-    _other_units = units.second;
+    _my_unit = my_unit;
+    _other_units = other_units;
     _debugInterface = debugInterface;
 
     setLoot();
@@ -82,13 +80,13 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 
 void MyUnit::AddNoVisibleUnitsAction()
 {
-    if (!actions.empty())
+    if (!_actions.empty())
         return;
 
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
     std::optional<model::ActionOrder> action;
     model::UnitOrder order(currentMoveVec(), currentDirection, action);
-    actions.insert({_my_unit->id, order});
+    _actions.insert({_my_unit->id, order});
 }
 
 model::Vec2 MyUnit::currentMoveVec()
@@ -145,7 +143,7 @@ double MyUnit::countWeaponRange()
 
 void MyUnit::AddFightClosestAction()
 {
-    if (!actions.empty())
+    if (!_actions.empty())
         return;
 
     if (_other_units.empty())
@@ -192,17 +190,17 @@ void MyUnit::AddFightClosestAction()
         aim = model::Aim(false);
 
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
-    actions.insert({_my_unit->id, order});
+    _actions.insert({_my_unit->id, order});
 }
 
-model::Order MyUnit::CreateOrder()
+std::unordered_map<int, model::UnitOrder> MyUnit::GetActions()
 {
-    return model::Order(actions);
+    return _actions;
 }
 
 void MyUnit::AddGetShieldAction()
 {
-    if (!actions.empty())
+    if (!_actions.empty())
         return;
 
     if (_my_unit->shieldPotions == _constants.maxShieldPotionsInInventory)
@@ -215,12 +213,12 @@ void MyUnit::AddGetShieldAction()
     auto loot_pos = closest_shield.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
     model::UnitOrder order ({diff_vec.x * MOVE_COEF, diff_vec.y * MOVE_COEF}, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_shield->id)));
-    actions.insert({_my_unit->id, order});
+    _actions.insert({_my_unit->id, order});
 }
 
 void MyUnit::AddGetWeaponAction()
 {
-    if (!actions.empty())
+    if (!_actions.empty())
         return;
 
     std::vector<model::Loot> prior_weapons;
@@ -244,12 +242,12 @@ void MyUnit::AddGetWeaponAction()
     auto loot_pos = closest_weapon.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
     model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_weapon->id)));
-    actions.insert({_my_unit->id, order});
+    _actions.insert({_my_unit->id, order});
 }
 
 void MyUnit::AddUseShieldAction()
 {
-    if (!actions.empty())
+    if (!_actions.empty())
         return;
 
     if (_my_unit->shieldPotions == 0)
@@ -260,12 +258,12 @@ void MyUnit::AddUseShieldAction()
 
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
     model::UnitOrder order (currentMoveVec(), currentDirection, std::make_optional<model::UseShieldPotion>(model::UseShieldPotion()));
-    actions.insert({_my_unit->id, order});
+    _actions.insert({_my_unit->id, order});
 }
 
 void MyUnit::AddGetAmmoAction()
 {
-    if (!actions.empty())
+    if (!_actions.empty())
         return;
 
     drawText(_my_unit->position, std::to_string(_my_unit->weapon.value_or(-1)), _debugInterface);
@@ -287,12 +285,12 @@ void MyUnit::AddGetAmmoAction()
     auto loot_pos = closest_weapon.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
     model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_weapon->id)));
-    actions.insert({_my_unit->id, order});
+    _actions.insert({_my_unit->id, order});
 }
 
 
 void MyUnit::ClearActions() 
 { 
-    actions.clear();
+    _actions.clear();
 }
 

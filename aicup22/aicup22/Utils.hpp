@@ -7,7 +7,7 @@
 #include <model/Obstacle.hpp>
 #include <DebugInterface.hpp>
 
-std::pair<std::optional<model::Unit>, std::vector<model::Unit>> getUnits(const model::Game &game);
+std::pair<std::vector<model::Unit>, std::vector<model::Unit>> getUnits(const model::Game &game);
 
 std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vector<model::Unit>& units);
 

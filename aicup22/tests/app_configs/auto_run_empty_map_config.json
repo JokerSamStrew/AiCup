@@ -3,7 +3,7 @@
   "game": {
     "Create" : {
         "Override": {
-            "preset": "Round1",
+            "preset": "Round2",
             "bot_players": 0,
             "extra_lives": 5,
             "continue_until": "AllDead",

@@ -14,7 +14,9 @@ private:
 public:
     MyStrategy(const model::Constants& constants);
     model::Order getOrder(const model::Game& game, DebugInterface* debugInterface);
-    MyUnit myUnit;
+    MyUnit myFirstUnit;
+    MyUnit mySecondUnit;
+    std::unordered_map<int, model::UnitOrder> actions;
     void debugUpdate(int displayedTick, DebugInterface& debugInterface);
     void finish();
 };

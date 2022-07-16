@@ -22,6 +22,7 @@
 class MyUnit
 {
     private:
+        int ID;
         std::vector<model::Loot> _shield_potions;
         std::vector<model::Loot> _weapons;
         std::vector<model::Loot> _ammo;
@@ -35,13 +36,13 @@ class MyUnit
         std::vector<model::Unit> _other_units;
         std::vector<model::Obstacle> _available_obs;
         const model::Game* _game;
-        std::unordered_map<int, model::UnitOrder> actions;
+        std::unordered_map<int, model::UnitOrder> _actions;
         DebugInterface* _debugInterface;
         double countWeaponRange();
         void setLoot();
     public:
         MyUnit(const model::Constants& constants);
-        void setGame(const model::Game* game, DebugInterface* debugInterface);
+        void setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface);
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
         void AddGetShieldAction();
@@ -49,7 +50,7 @@ class MyUnit
         void AddUseShieldAction();
         void AddGetAmmoAction();
         void AddGetWeaponAction();
-        model::Order CreateOrder();
+        std::unordered_map<int, model::UnitOrder> GetActions();
         void ClearActions();
 };
 

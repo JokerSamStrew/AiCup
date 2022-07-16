@@ -1,10 +1,10 @@
 {
-  "seed": 666,
+  "seed": 12,
   "game": {
     "Create" : {
         "Override": {
-            "preset": "Round1",
-            "bot_players": 10,
+            "preset": "Round2",
+            "bot_players": 30,
             "extra_lives": 5,
             "continue_until": "AllDead",
             "initial_zone_radius" : 100
