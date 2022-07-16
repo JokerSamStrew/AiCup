@@ -21,7 +21,7 @@ void MyUnit::setLoot()
     for (auto l : _game->loot)
     {
 
-        if (!isVecInsideCircle(_my_unit->position, MOVE_RANGE, l.position))
+        if (!isVecInsideCircle(_my_unit->position, PICKUP_RANGE, l.position))
             continue;
 
         if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius * EDGE_COEF, l.position))
@@ -66,7 +66,7 @@ void MyUnit::setGame(const model::Game* game, DebugInterface* debugInterface)
 {
     _game = game;
 
-    auto rad = _game->zone.currentRadius * EDGE_COEF;
+    auto rad = _game->zone.currentRadius * EDGE_COEF - 5.0;
     auto center = _game->zone.currentCenter;
     _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
 
@@ -94,15 +94,38 @@ void MyUnit::AddNoVisibleUnitsAction()
 model::Vec2 MyUnit::currentMoveVec()
 {
     auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, MOVE_RANGE);
-    highlightObstacles(obs, _debugInterface);
+    auto center_point_radius = _game->zone.nextRadius * CLOSE_TO_REACH;
+    auto center = _game->zone.nextCenter;
+    obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
     if (obs.empty())
         return getNextZoneCenter(*_game, *_my_unit);
 
-    auto center = _game->zone.nextCenter;
-    auto closest_obs = closestObstacle(center, obs).value(); 
-    highlightObstacle(closest_obs, _debugInterface);
+    if (_prev_prev_obs.has_value())
+        obs = removeObstaclesInsideCircle(obs, _prev_prev_obs->position, _prev_prev_obs->radius);
+    if (obs.empty())
+        return vecDiff(_prev_prev_obs->position, _my_unit->position);
 
-    return vecDiff(closest_obs.position, _my_unit->position);
+    if (_prev_obs.has_value())
+        obs = removeObstaclesInsideCircle(obs, _prev_obs->position, _prev_obs->radius);
+    if (obs.empty())
+        return vecDiff(_prev_obs->position, _my_unit->position);
+
+
+    highlightObstacles(obs, _debugInterface);
+
+    if (_current_obs.has_value() 
+        && !isVecInsideCircle(_current_obs->position, _current_obs->radius + NEAR_OBS, _my_unit->position)) 
+    {
+        _prev_obs = _current_obs;
+        highlightObstacle(*_current_obs, _debugInterface);
+        return vecDiff(_current_obs->position, _my_unit->position);
+    }
+
+    auto closest_obs = closestObstacle(center, obs).value(); 
+    _prev_prev_obs = _prev_obs;
+    _current_obs = closest_obs;
+
+    return vecDiff(_current_obs->position, _my_unit->position);
 }
 
 
@@ -173,7 +196,7 @@ void MyUnit::AddGetShieldAction()
 
     auto loot_pos = closest_shield.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
-    model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_shield->id)));
+    model::UnitOrder order ({diff_vec.x * MOVE_COEF, diff_vec.y * MOVE_COEF}, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_shield->id)));
     actions.insert({_my_unit->id, order});
 }
 

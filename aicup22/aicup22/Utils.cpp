@@ -68,6 +68,11 @@ model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit)
     return vecDiff( game.zone.nextCenter, unit.position );
 }
 
+model::Vec2 getCurrentZoneCenter(const model::Game &game, const model::Unit& unit)
+{
+    return vecDiff( game.zone.currentCenter, unit.position );
+}
+
 model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b)
 {
     return {a.x - b.x, a.y - b.y};
@@ -115,6 +120,18 @@ std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::O
     for (auto obs : obstacles)
     {
         if (isVecInsideCircle(circle_pos, rad, obs.position))
+            result.push_back(obs);
+    }
+
+    return result;
+}
+
+std::vector<model::Obstacle> removeObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, double rad)
+{
+    std::vector<model::Obstacle> result;
+    for (auto obs : obstacles)
+    {
+        if (!isVecInsideCircle(circle_pos, rad, obs.position))
             result.push_back(obs);
     }
 
