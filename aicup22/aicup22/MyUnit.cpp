@@ -1,6 +1,5 @@
 #include "MyUnit.hpp"
 #include "Utils.hpp"
-#include <memory>
 
 MyUnit::MyUnit(const model::Constants& constants)
     : _constants(constants)
@@ -27,7 +26,7 @@ void MyUnit::setLoot()
         if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius * EDGE_COEF, l.position))
             continue;
 
-        if (_second_unit.has_value() && !isVecInsideCircle(_second_unit->position, PICKUP_RANGE, l.position))
+        if (_second_unit.has_value() && isVecInsideCircle(_second_unit->position, PICKUP_RANGE, l.position))
             continue;
 
         if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
@@ -194,10 +193,10 @@ void MyUnit::AddFightClosestAction()
     }
 
     auto aim = model::Aim(true);
-    if (isAimInObs(_my_unit->position, aim_pos, obs))
-        aim = model::Aim(false);
-
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
+    if (isAimInObs(_my_unit->position, aim_pos, obs))
+        order.action = std::optional<model::ActionOrder>();
+
     _actions.insert({_my_unit->id, order});
 }
 
