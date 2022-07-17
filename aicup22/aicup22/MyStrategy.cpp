@@ -6,7 +6,13 @@
 #include <Stream.hpp>
 #include "Utils.hpp"
 
-MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants), _my_second_unit(constants) {}
+MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants), _my_second_unit(constants) 
+{
+    for (auto obs : _constants.obstacles){
+        if (!obs.canShootThrough)
+            _available_obs.push_back(obs);
+    }
+}
 
 bool MyStrategy::canSetUnit(const MyUnit& unit, int unit_id)
 {
@@ -23,19 +29,23 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
     auto units = getUnits(game);
     auto other_units = units.second;
     auto my_units = units.first;
+    
+    auto center = game.zone.currentCenter;
+    auto rad = game.zone.currentRadius * EDGE_COEF - MIN_EDGE_RAD;
+    _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
 
     actions.clear();
     for (auto my_unit : my_units)
     {
         if (canSetUnit(_my_first_unit, my_unit.id))
         {
-            _my_first_unit.setGame(&game, my_unit, other_units, debugInterface);
+            _my_first_unit.setGame(&game, my_unit, other_units, _available_obs, debugInterface);
             _my_second_unit.setSecondUnit(my_unit);
             getUnitOrder(_my_first_unit);
         }
         else if (canSetUnit(_my_second_unit, my_unit.id))
         {
-            _my_second_unit.setGame(&game, my_unit, other_units, debugInterface);
+            _my_second_unit.setGame(&game, my_unit, other_units, _available_obs, debugInterface);
             _my_second_unit.setSecondUnit(my_unit);
             getUnitOrder(_my_second_unit);
         }

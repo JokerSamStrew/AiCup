@@ -4,10 +4,6 @@
 MyUnit::MyUnit(const model::Constants& constants)
     : _constants(constants)
 {
-    for (auto obs : _constants.obstacles){
-        if (!obs.canShootThrough)
-            _available_obs.push_back(obs);
-    }
 }
 
 void MyUnit::setLoot()
@@ -66,14 +62,14 @@ void MyUnit::AddSoundAction()
 
 }
 
-void MyUnit::setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface)
+void MyUnit::setGame(const model::Game* game, 
+        const model::Unit& my_unit, 
+        const std::vector<model::Unit>& other_units, 
+        const std::vector<model::Obstacle>& obstacles, 
+        DebugInterface* debugInterface)
 {
+    _available_obs = obstacles;
     _game = game;
-
-    auto rad = _game->zone.currentRadius * EDGE_COEF - MIN_EDGE_RAD;
-    auto center = _game->zone.currentCenter;
-    _available_obs = getObstaclesInsideCircle(_available_obs, center, rad);
-
     _my_unit = my_unit;
     _prev_hp_level = _my_unit->health;
     _prev_shield_level = _my_unit->shield;

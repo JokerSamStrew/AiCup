@@ -12,6 +12,7 @@ private:
     model::Constants _constants;
     bool canSetUnit(const MyUnit& unit, int unit_id);
     void getUnitOrder(MyUnit& unit);
+    std::vector<model::Obstacle> _available_obs;
 public:
     MyStrategy(const model::Constants& constants);
     model::Order getOrder(const model::Game& game, DebugInterface* debugInterface);

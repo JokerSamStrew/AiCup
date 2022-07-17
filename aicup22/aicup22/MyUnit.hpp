@@ -57,7 +57,11 @@ class MyUnit
         std::optional<int> ID;
         MyUnit(const model::Constants& constants);
         void setSecondUnit(const std::optional<model::Unit>& unit);
-        void setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface);
+        void setGame(const model::Game* game, 
+            const model::Unit& my_unit, 
+            const std::vector<model::Unit>& other_units, 
+            const std::vector<model::Obstacle>& obstacles, 
+            DebugInterface* debugInterface);
         std::optional<model::UnitOrder> GetOrder();
 };
 
