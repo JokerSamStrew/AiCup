@@ -178,23 +178,19 @@ void MyUnit::AddFightClosestAction()
 
     auto direction = vecDiff(other_unit->position, _my_unit->position);
     direction = vecSum(direction, {other_unit->velocity.x * time, other_unit->velocity.y * time});
+
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
-
-    auto obs = removeObstaclesInsideCircle(_available_obs, _my_unit->position, unit_range + 0.6);
-    auto aim_pos = vecSum(_my_unit->position, model::Vec2( _my_unit->direction.x * unit_range, _my_unit->direction.y * unit_range ));
-
-    if (_debugInterface != nullptr)
-    {
-        auto vertices = std::vector<model::Vec2>();
-        vertices.push_back(_my_unit->position);
-        vertices.push_back(aim_pos);
-        _debugInterface->addPolyLine(vertices, 0.2, debugging::Color(0.0, 0.6, 0.0, 1.0)); 
-    }
 
     auto aim = model::Aim(true);
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
+    auto aim_pos = vecSum(_my_unit->position, model::Vec2( _my_unit->direction.x * unit_range, _my_unit->direction.y * unit_range ));
+    auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, unit_range + 0.6);
     if (isAimInObs(_my_unit->position, aim_pos, obs))
-        order.action = std::optional<model::ActionOrder>();
+        order.action = model::Aim(false);
+    else
+    {
+        drawLine(_my_unit->position, aim_pos, _debugInterface);
+    }
 
     _actions.push_back({0, order});
 }

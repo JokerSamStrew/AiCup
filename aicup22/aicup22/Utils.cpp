@@ -217,3 +217,14 @@ bool isAimInObs(const model::Vec2& pos1, const model::Vec2& pos2, const model::O
     d = d < 0 ? -d : d;
     return d < obs.radius - 0.01;
 }
+
+void drawLine(const model::Vec2& pos1, const model::Vec2& pos2, DebugInterface *debugInterface)
+{
+    if (debugInterface == nullptr)
+        return;
+
+    auto vertices = std::vector<model::Vec2>();
+    vertices.push_back(pos1);
+    vertices.push_back(pos2);
+    debugInterface->addPolyLine(vertices, 0.2, debugging::Color(0.0, 0.6, 0.0, 1.0)); 
+}

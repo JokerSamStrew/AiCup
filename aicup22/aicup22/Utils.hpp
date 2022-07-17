@@ -27,6 +27,8 @@ model::Vec2 getCurrentZoneCenter(const model::Game &game, const model::Unit& uni
 
 model::Vec2 vecDiff(const model::Vec2& a, const model::Vec2& b);
 
+void drawLine(const model::Vec2& a, const model::Vec2& b, DebugInterface *debugInterface);
+
 void drawDirectionArc(const model::Unit& unit, double lineSize, DebugInterface *debugInterface);
 
 model::Vec2 vecSum(const model::Vec2& a, const model::Vec2& b);
