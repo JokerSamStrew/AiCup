@@ -48,6 +48,8 @@ void MyUnit::setLoot()
 
 void MyUnit::AddSoundAction()
 {
+    highlightSounds(_game->sounds, _debugInterface);
+
     if (!_actions.empty() || _game->sounds.empty())
         return;
   
@@ -101,9 +103,12 @@ model::Vec2 MyUnit::currentMoveVec()
     if (_second_unit.has_value())
         obs = removeObstaclesInsideCircle(obs, _second_unit->position, MOVE_RANGE);
 
-    obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
-    if (obs.empty())
-        return getNextZoneCenter(*_game, *_my_unit);
+    if (!isVecInsideCircle(center, center_point_radius, _my_unit->position))
+    {
+        obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
+        if (obs.empty())
+            return getNextZoneCenter(*_game, *_my_unit);
+    }
 
     if (_prev_prev_obs.has_value())
         obs = removeObstaclesInsideCircle(obs, _prev_prev_obs->position, _prev_prev_obs->radius);
@@ -136,15 +141,13 @@ model::Vec2 MyUnit::currentMoveVec()
 
 double MyUnit::countWeaponRange()
 {
-    if (_my_unit->weapon.has_value())
-    {
-        auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
-        auto speed = weapon_properties.projectileSpeed;
-        auto time = weapon_properties.projectileLifeTime;
-        return speed * time * WEAPON_COEF;
-    }
+    if (!_my_unit->weapon.has_value())
+        return 0.0;
 
-    return 0.0;
+    auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
+    auto speed = weapon_properties.projectileSpeed;
+    auto time = weapon_properties.projectileLifeTime;
+    return speed * time * WEAPON_COEF;
 }
 
 void MyUnit::AddFightClosestAction()

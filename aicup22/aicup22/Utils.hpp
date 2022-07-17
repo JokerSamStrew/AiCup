@@ -19,6 +19,8 @@ double countRange(const model::Vec2& a, const model::Vec2& b);
 
 void highlightUnits(std::vector<model::Unit>& units, DebugInterface *debugInterface);
 
+void highlightSounds(const std::vector<model::Sound>& sounds, DebugInterface *debugInterface);
+
 void highlightLoot(const std::vector<model::Loot>& loot, DebugInterface *debugInterface, int type);
 
 model::Vec2 getNextZoneCenter(const model::Game &game, const model::Unit& unit);

@@ -180,6 +180,17 @@ void highlightObstacle(const model::Obstacle& obstacle, DebugInterface *debugInt
     debugInterface->addRing(obstacle.position, obstacle.radius + 1.0, 0.5, debugging::Color(1.0, 0.2, 0.0, 0.7));
 }
 
+void highlightSounds(const std::vector<model::Sound>& sounds, DebugInterface *debugInterface)
+{
+    if (debugInterface == nullptr)
+        return;
+
+    for (auto s : sounds)
+    {
+        debugInterface->addRing(s.position, 2.0, 0.5, debugging::Color(0.0, 0.5, 0.0, 0.2));
+    }
+}
+
 void highlightLoot(const std::vector<model::Loot>& loot, DebugInterface *debugInterface, int type)
 {
     if (debugInterface == nullptr)
@@ -215,7 +226,7 @@ bool isAimInObs(const model::Vec2& pos1, const model::Vec2& pos2, const model::O
     auto c = - pos1.x / (pos2.x - pos1.x) + pos1.y / (pos2.y - pos1.y); 
     auto d = ( a * obs.position.x + b * obs.position.y + c ) / sqrt(a*a + b*b);
     d = d < 0 ? -d : d;
-    return d < obs.radius - 0.01;
+    return d < obs.radius - 0.05;
 }
 
 void drawLine(const model::Vec2& pos1, const model::Vec2& pos2, DebugInterface *debugInterface)
