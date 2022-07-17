@@ -6,7 +6,17 @@
 #include <Stream.hpp>
 #include "Utils.hpp"
 
-MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), myFirstUnit(constants), mySecondUnit(constants) {}
+MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants), _my_second_unit(constants) {}
+
+bool MyStrategy::canSetUnit(const MyUnit& unit, int unit_id)
+{
+    return !unit.ID.has_value() || unit.ID == unit_id;
+}
+
+void MyStrategy::getUnitOrder(MyUnit& unit)
+{
+    actions.insert({unit.ID.value(), unit.GetOrder().value()});
+}
 
 model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debugInterface)
 {
@@ -17,33 +27,17 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
     actions.clear();
     for (auto my_unit : my_units)
     {
-        if (!myFirstUnit.ID.has_value() || myFirstUnit.ID == my_unit.id)
+        if (canSetUnit(_my_first_unit, my_unit.id))
         {
-            myFirstUnit.ClearActions();
-            myFirstUnit.setGame(&game, my_unit, other_units, debugInterface);
-            myFirstUnit.AddFightClosestAction();
-            myFirstUnit.AddSoundAction();
-            myFirstUnit.AddUseShieldAction();
-            myFirstUnit.AddGetShieldAction();
-            myFirstUnit.AddGetAmmoAction();
-            myFirstUnit.AddGetWeaponAction();
-            myFirstUnit.AddNoVisibleUnitsAction();
-            mySecondUnit.setSecondUnit(my_unit);
-            actions.insert({myFirstUnit.ID.value(), myFirstUnit.GetOrder().value()});
+            _my_first_unit.setGame(&game, my_unit, other_units, debugInterface);
+            _my_second_unit.setSecondUnit(my_unit);
+            getUnitOrder(_my_first_unit);
         }
-        else if (!mySecondUnit.ID.has_value() || mySecondUnit.ID == my_unit.id)
+        else if (canSetUnit(_my_second_unit, my_unit.id))
         {
-            mySecondUnit.ClearActions();
-            mySecondUnit.setGame(&game, my_unit, other_units, debugInterface);
-            mySecondUnit.AddFightClosestAction();
-            mySecondUnit.AddSoundAction();
-            mySecondUnit.AddUseShieldAction();
-            mySecondUnit.AddGetShieldAction();
-            mySecondUnit.AddGetAmmoAction();
-            mySecondUnit.AddGetWeaponAction();
-            mySecondUnit.AddNoVisibleUnitsAction();
-            mySecondUnit.setSecondUnit(my_unit);
-            actions.insert({mySecondUnit.ID.value(), mySecondUnit.GetOrder().value()});
+            _my_second_unit.setGame(&game, my_unit, other_units, debugInterface);
+            _my_second_unit.setSecondUnit(my_unit);
+            getUnitOrder(_my_second_unit);
         }
     }
 

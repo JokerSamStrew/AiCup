@@ -43,11 +43,6 @@ class MyUnit
         DebugInterface* _debugInterface;
         double countWeaponRange();
         void setLoot();
-    public:
-        std::optional<int> ID;
-        MyUnit(const model::Constants& constants);
-        void setSecondUnit(const std::optional<model::Unit>& unit);
-        void setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface);
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
         void AddGetShieldAction();
@@ -56,8 +51,14 @@ class MyUnit
         void AddGetAmmoAction();
         void AddFleeAction();
         void AddGetWeaponAction();
-        std::optional<model::UnitOrder> GetOrder();
         void ClearActions();
+
+    public:
+        std::optional<int> ID;
+        MyUnit(const model::Constants& constants);
+        void setSecondUnit(const std::optional<model::Unit>& unit);
+        void setGame(const model::Game* game, const model::Unit& my_unit, const std::vector<model::Unit>& other_units, DebugInterface* debugInterface);
+        std::optional<model::UnitOrder> GetOrder();
 };
 
 #endif

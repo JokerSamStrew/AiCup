@@ -10,12 +10,13 @@
 class MyStrategy {
 private:
     model::Constants _constants;
-
+    bool canSetUnit(const MyUnit& unit, int unit_id);
+    void getUnitOrder(MyUnit& unit);
 public:
     MyStrategy(const model::Constants& constants);
     model::Order getOrder(const model::Game& game, DebugInterface* debugInterface);
-    MyUnit myFirstUnit;
-    MyUnit mySecondUnit;
+    MyUnit _my_first_unit;
+    MyUnit _my_second_unit;
     std::unordered_map<int, model::UnitOrder> actions;
     void debugUpdate(int displayedTick, DebugInterface& debugInterface);
     void finish();

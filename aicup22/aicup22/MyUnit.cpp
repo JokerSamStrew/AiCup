@@ -205,6 +205,15 @@ void MyUnit::AddFightClosestAction()
 
 std::optional<model::UnitOrder> MyUnit::GetOrder()
 {
+    ClearActions();
+    AddFightClosestAction();
+    AddSoundAction();
+    AddUseShieldAction();
+    AddGetShieldAction();
+    AddGetAmmoAction();
+    AddGetWeaponAction();
+    AddNoVisibleUnitsAction();
+
     if (_actions.empty())
         return std::optional<model::UnitOrder>();
 
