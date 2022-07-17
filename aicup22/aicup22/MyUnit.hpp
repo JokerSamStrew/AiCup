@@ -9,14 +9,14 @@
 #include "model/Constants.hpp"
 #include <unordered_map>
 
-#define NEAR_OBS 1.5 
+#define NEAR_OBS 1.8 
 #define MOVE_RANGE 30.0
 #define PICKUP_RANGE 10.0
 #define SOUND_RANGE 10.0
 #define EDGE_COEF 0.85
 #define WEAPON_COEF 0.65 
 #define MOVE_COEF 100000.0 
-#define CLOSE_TO_REACH 0.5 
+#define CLOSE_TO_REACH 0.05 
 #define MIN_EDGE_RAD 5.0
 
 class MyUnit
@@ -29,6 +29,8 @@ class MyUnit
         std::optional<model::Obstacle> _current_obs;
         std::optional<model::Obstacle> _prev_obs;
         std::optional<model::Obstacle> _prev_prev_obs;
+        int _prev_shield_level;
+        int _prev_hp_level;
         model::Constants _constants;
         model::Vec2 currentMoveVec();
         std::optional<model::Unit> _my_unit;
@@ -36,7 +38,8 @@ class MyUnit
         std::vector<model::Unit> _other_units;
         std::vector<model::Obstacle> _available_obs;
         const model::Game* _game;
-        std::unordered_map<int, model::UnitOrder> _actions;
+        std::vector<std::pair<double, model::UnitOrder>> _actions;
+
         DebugInterface* _debugInterface;
         double countWeaponRange();
         void setLoot();
@@ -51,8 +54,9 @@ class MyUnit
         void AddSoundAction();
         void AddUseShieldAction();
         void AddGetAmmoAction();
+        void AddFleeAction();
         void AddGetWeaponAction();
-        std::unordered_map<int, model::UnitOrder> GetActions();
+        std::optional<model::UnitOrder> GetOrder();
         void ClearActions();
 };
 

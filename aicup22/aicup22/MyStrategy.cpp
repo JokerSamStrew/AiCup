@@ -29,8 +29,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
             myFirstUnit.AddGetWeaponAction();
             myFirstUnit.AddNoVisibleUnitsAction();
             mySecondUnit.setSecondUnit(my_unit);
-            for (auto action : myFirstUnit.GetActions())
-                actions.insert(action);
+            actions.insert({myFirstUnit.ID.value(), myFirstUnit.GetOrder().value()});
         }
         else if (!mySecondUnit.ID.has_value() || mySecondUnit.ID == my_unit.id)
         {
@@ -44,8 +43,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
             mySecondUnit.AddGetWeaponAction();
             mySecondUnit.AddNoVisibleUnitsAction();
             mySecondUnit.setSecondUnit(my_unit);
-            for (auto action : mySecondUnit.GetActions())
-                actions.insert(action);
+            actions.insert({mySecondUnit.ID.value(), mySecondUnit.GetOrder().value()});
         }
     }
 
