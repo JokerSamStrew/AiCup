@@ -188,9 +188,7 @@ void MyUnit::AddFightClosestAction()
     if (isAimInObs(_my_unit->position, aim_pos, obs))
         order.action = model::Aim(false);
     else
-    {
         drawLine(_my_unit->position, aim_pos, _debugInterface);
-    }
 
     _actions.push_back({0, order});
 }
