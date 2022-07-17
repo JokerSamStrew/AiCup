@@ -46,22 +46,34 @@ void MyUnit::setLoot()
     highlightLoot(_weapons, _debugInterface, 3);
 }
 
-void MyUnit::AddSoundAction()
+void MyUnit::setSound()
 {
-    highlightSounds(_game->sounds, _debugInterface);
+    auto _current_sounds = _sounds;
+    _sounds.clear();
+    int max_size = 5;
 
-    if (!_actions.empty() || _game->sounds.empty())
-        return;
-  
-    for (auto s : _game->sounds)
+    for (const auto& s : _game->sounds)
     {
         if (isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
         {
-            AddNoVisibleUnitsAction();
-            return;
+            _sounds.push_back(s);
         }
     }
 
+    for (const auto& s : _current_sounds)
+    {
+        if (isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
+        {
+            max_size--;
+            _sounds.push_back(s);
+        }
+
+        if (max_size == 0)
+            break;
+    }
+
+
+    highlightSounds(_sounds, _debugInterface);
 }
 
 void MyUnit::setGame(const model::Game* game, 
@@ -76,22 +88,25 @@ void MyUnit::setGame(const model::Game* game,
     _prev_hp_level = _my_unit->health;
     _prev_shield_level = _my_unit->shield;
     ID = my_unit.id;
-    _other_units = other_units;
+    
+    for (const auto& unit : _other_units) {
+        if (!unit.remainingSpawnTime.has_value())
+            _other_units.push_back(unit);
+    }
+
     _debugInterface = debugInterface;
 
     setLoot();
+    setSound();
     highlightUnits(_other_units, _debugInterface);
 }
 
 void MyUnit::AddNoVisibleUnitsAction()
 {
-    if (!_actions.empty())
-        return;
-
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
     std::optional<model::ActionOrder> action;
     model::UnitOrder order(currentMoveVec(), currentDirection, action);
-    _actions.push_back({0, order});
+    _actions.push_back({0.0, order});
 }
 
 model::Vec2 MyUnit::currentMoveVec()
@@ -152,9 +167,6 @@ double MyUnit::countWeaponRange()
 
 void MyUnit::AddFightClosestAction()
 {
-    if (!_actions.empty())
-        return;
-
     if (_other_units.empty())
         return;
     
@@ -176,7 +188,6 @@ void MyUnit::AddFightClosestAction()
     auto time = unit_range / speed; 
     if (_my_unit->aim < 1)
         time += weapon_properties.aimTime;
-
     time *= WEAPON_COEF;
 
     auto direction = vecDiff(other_unit->position, _my_unit->position);
@@ -184,24 +195,33 @@ void MyUnit::AddFightClosestAction()
 
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
 
+    // auto priority = 1 - ( other_unit->shield / _constants.maxShield + other_unit->health / _constants.unitHealth ) / 2 + 0.5;
+    auto priority = 1.0;
     auto aim = model::Aim(true);
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
     auto aim_pos = vecSum(_my_unit->position, model::Vec2( _my_unit->direction.x * unit_range, _my_unit->direction.y * unit_range ));
     auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, unit_range + 0.6);
     if (isAimInObs(_my_unit->position, aim_pos, obs))
+    {
+        priority = 1 - ( other_unit->shield / _constants.maxShield + other_unit->health / _constants.unitHealth ) / 2;
         order.action = model::Aim(false);
+    }
     else
         drawLine(_my_unit->position, aim_pos, _debugInterface);
 
-    _actions.push_back({0, order});
+    _actions.push_back({priority, order});
 }
 
 std::optional<model::UnitOrder> MyUnit::GetOrder()
 {
     ClearActions();
-    AddFightClosestAction();
-    AddSoundAction();
-    AddUseShieldAction();
+    drawText(vecSum(_my_unit->position, {0.5, 0.5}), std::to_string(_my_unit->remainingSpawnTime.value_or(-1)), _debugInterface);
+   
+    if (!_my_unit->remainingSpawnTime.has_value()) {
+        AddFightClosestAction();
+        AddUseShieldAction();
+    }
+
     AddGetShieldAction();
     AddGetAmmoAction();
     AddGetWeaponAction();
@@ -210,14 +230,22 @@ std::optional<model::UnitOrder> MyUnit::GetOrder()
     if (_actions.empty())
         return std::optional<model::UnitOrder>();
 
-    return _actions[0].second;
+    int max_priority = _actions[0].first;
+    std::optional<model::UnitOrder> action = _actions[0].second;
+    for (const auto& a : _actions)
+    {
+        if (max_priority < a.first)
+        {
+            max_priority = a.first;
+            action = a.second;
+        }
+    }
+    
+    return action;
 }
 
 void MyUnit::AddGetShieldAction()
 {
-    if (!_actions.empty())
-        return;
-
     if (_my_unit->shieldPotions == _constants.maxShieldPotionsInInventory)
         return;
 
@@ -225,17 +253,15 @@ void MyUnit::AddGetShieldAction()
     if (!closest_shield.has_value())
         return;
 
+    auto priority = 1.0 - (double) _my_unit->shieldPotions / _constants.maxShieldPotionsInInventory;
     auto loot_pos = closest_shield.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
     model::UnitOrder order ({diff_vec.x * MOVE_COEF, diff_vec.y * MOVE_COEF}, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_shield->id)));
-    _actions.push_back({0, order});
+    _actions.push_back({priority, order});
 }
 
 void MyUnit::AddGetWeaponAction()
 {
-    if (!_actions.empty())
-        return;
-
     std::vector<model::Loot> prior_weapons;
     drawText(_my_unit->position, std::to_string(_my_unit->weapon.value_or(-1)), _debugInterface);
 
@@ -253,34 +279,35 @@ void MyUnit::AddGetWeaponAction()
     auto closest_weapon = closestLoot(_my_unit->position, prior_weapons);
     if (!closest_weapon.has_value())
         return;
+    
+    auto weapon = std::get<model::Weapon>(closest_weapon->item);
+    auto priority = 1.0;
+
+    if (_my_unit->weapon.has_value())
+        priority = (double) _my_unit->ammo[weapon.typeIndex] / _constants.weapons[weapon.typeIndex].maxInventoryAmmo;
 
     auto loot_pos = closest_weapon.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
     model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_weapon->id)));
-    _actions.push_back({0, order});
+    _actions.push_back({priority, order});
 }
 
 void MyUnit::AddUseShieldAction()
 {
-    if (!_actions.empty())
-        return;
-
     if (_my_unit->shieldPotions == 0)
         return;
 
     if (_my_unit->shield == _constants.maxShield )
         return;
 
+    auto priority = 1.0 - ( _my_unit->shield / _constants.maxShield + _my_unit->health / _constants.unitHealth ) / 2;
     auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
     model::UnitOrder order (currentMoveVec(), currentDirection, std::make_optional<model::UseShieldPotion>(model::UseShieldPotion()));
-    _actions.push_back({0, order});
+    _actions.push_back({priority, order});
 }
 
 void MyUnit::AddGetAmmoAction()
 {
-    if (!_actions.empty())
-        return;
-
     drawText(_my_unit->position, std::to_string(_my_unit->weapon.value_or(-1)), _debugInterface);
     std::vector<model::Loot> prior_ammo;
 
@@ -293,14 +320,17 @@ void MyUnit::AddGetAmmoAction()
         prior_ammo.push_back(a);
     }
 
-    auto closest_weapon = closestLoot(_my_unit->position, prior_ammo);
-    if (!closest_weapon.has_value())
+    auto closest_ammo = closestLoot(_my_unit->position, prior_ammo);
+    if (!closest_ammo.has_value())
         return;
 
-    auto loot_pos = closest_weapon.value().position;
+    auto ammo = std::get<model::Ammo>(closest_ammo->item);
+    auto priority = 1.0 - (double) _my_unit->ammo[ammo.weaponTypeIndex] / _constants.weapons[ammo.weaponTypeIndex].maxInventoryAmmo;
+
+    auto loot_pos = closest_ammo.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
-    model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_weapon->id)));
-    _actions.push_back({0, order});
+    model::UnitOrder order (diff_vec, diff_vec, std::make_optional<model::Pickup>(model::Pickup(closest_ammo->id)));
+    _actions.push_back({priority, order});
 }
 
 
@@ -308,19 +338,6 @@ void MyUnit::setSecondUnit(const std::optional<model::Unit>& unit)
 {
     if (unit.has_value())
         _second_unit = unit.value();
-}
-
-void MyUnit::AddFleeAction()
-{
-    if (!_actions.empty())
-        return;
-
-    if (_my_unit->health >= _prev_hp_level && _my_unit->shield >= _prev_shield_level)
-        return;
-
-    std::optional<model::ActionOrder> action;
-    model::UnitOrder order(currentMoveVec(), _my_unit->direction, action);
-    _actions.push_back({0, order});
 }
 
 void MyUnit::ClearActions() 

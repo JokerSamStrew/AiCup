@@ -10,8 +10,8 @@
 #include <unordered_map>
 
 #define NEAR_OBS 1.8 
-#define MOVE_RANGE 20.0
-#define PICKUP_RANGE 10.0
+#define MOVE_RANGE 30.0
+#define PICKUP_RANGE 5.0
 #define SOUND_RANGE 10.0
 #define EDGE_COEF 0.85
 #define WEAPON_COEF 0.65 
@@ -35,6 +35,7 @@ class MyUnit
         model::Vec2 currentMoveVec();
         std::optional<model::Unit> _my_unit;
         std::optional<model::Unit> _second_unit;
+        std::vector<model::Sound> _sounds;
         std::vector<model::Unit> _other_units;
         std::vector<model::Obstacle> _available_obs;
         const model::Game* _game;
@@ -43,13 +44,12 @@ class MyUnit
         DebugInterface* _debugInterface;
         double countWeaponRange();
         void setLoot();
+        void setSound();
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
         void AddGetShieldAction();
-        void AddSoundAction();
         void AddUseShieldAction();
         void AddGetAmmoAction();
-        void AddFleeAction();
         void AddGetWeaponAction();
         void ClearActions();
 
