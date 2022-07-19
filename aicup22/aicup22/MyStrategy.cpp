@@ -6,7 +6,7 @@
 #include <Stream.hpp>
 #include "Utils.hpp"
 
-MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants), _my_second_unit(constants) 
+MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants, true), _my_second_unit(constants, false) 
 {
     for (auto obs : _constants.obstacles){
         if (!obs.canShootThrough)
@@ -46,7 +46,7 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
         else if (canSetUnit(_my_second_unit, my_unit.id))
         {
             _my_second_unit.setGame(&game, my_unit, other_units, _available_obs, debugInterface);
-            _my_second_unit.setSecondUnit(my_unit, _my_second_unit.GetCurrentObstacle());
+            _my_second_unit.setSecondUnit(my_unit, _my_first_unit.GetCurrentObstacle());
             getUnitOrder(_my_second_unit);
         }
     }

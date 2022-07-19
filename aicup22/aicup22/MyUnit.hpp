@@ -10,8 +10,8 @@
 #include <unordered_map>
 
 #define NEAR_OBS 1.8 
-#define MOVE_RANGE 30.0
-#define PICKUP_RANGE 5.0
+#define MOVE_RANGE 20.0
+#define PICKUP_RANGE 10.0
 #define SOUND_RANGE 20.0
 #define EDGE_COEF 0.85
 #define WEAPON_COEF 0.65 
@@ -22,6 +22,7 @@
 class MyUnit
 {
     private:
+        bool _follow_second = false;
         std::vector<model::Loot> _shield_potions;
         std::vector<model::Loot> _weapons;
         std::vector<model::Loot> _ammo;
@@ -29,6 +30,7 @@ class MyUnit
         std::optional<model::Obstacle> _current_obs;
         std::optional<model::Obstacle> _prev_obs;
         std::optional<model::Obstacle> _prev_prev_obs;
+        std::optional<model::Unit> _current_target;
         int _prev_shield_level;
         int _prev_hp_level;
         model::Constants _constants;
@@ -56,7 +58,7 @@ class MyUnit
 
     public:
         std::optional<int> ID;
-        MyUnit(const model::Constants& constants);
+        MyUnit(const model::Constants& constants, bool follow_second);
         void setSecondUnit(const std::optional<model::Unit>& unit, const std::optional<model::Obstacle>& obs);
         void setGame(const model::Game* game, 
             const model::Unit& my_unit, 

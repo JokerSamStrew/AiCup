@@ -41,6 +41,22 @@ std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vect
    return closestUnit;
 }
 
+std::optional<model::Unit> lessHpUnit(const model::Vec2& point, const std::vector<model::Unit>& units)
+{
+   double minHp = std::numeric_limits<double>::max(); 
+   std::optional<model::Unit> lessHpUnit;
+   for (auto unit : units){
+       double hp = unit.health + unit.shield; 
+       if (hp < minHp)
+       {
+          minHp = hp;
+          lessHpUnit = unit;
+       }
+   }
+
+   return lessHpUnit;
+}
+
 std::optional<model::Sound> closestSound(const model::Vec2& point, const std::vector<model::Sound>& sounds)
 {
    double minDistance = std::numeric_limits<double>::max(); 

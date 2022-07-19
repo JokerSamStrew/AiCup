@@ -1,9 +1,10 @@
 #include "MyUnit.hpp"
 #include "Utils.hpp"
 
-MyUnit::MyUnit(const model::Constants& constants)
+MyUnit::MyUnit(const model::Constants& constants, bool follow_second)
     : _constants(constants)
 {
+    _follow_second = follow_second;
 }
 
 void MyUnit::setLoot()
@@ -24,7 +25,7 @@ void MyUnit::setLoot()
         if (_second_unit.has_value() && isVecInsideCircle(_second_unit->position, PICKUP_RANGE, l.position))
             continue;
 
-        if (_second_unit.has_value() && isVecInsideCircle(_game->zone.nextCenter, _game->zone.nextRadius * CLOSE_TO_REACH, l.position))
+        if (isVecInsideCircle(_game->zone.nextCenter, _game->zone.nextRadius * CLOSE_TO_REACH, l.position))
             continue;
 
         if (const auto* item = std::get_if<model::ShieldPotions>(&l.item))
@@ -100,6 +101,8 @@ void MyUnit::setGame(const model::Game* game,
     setLoot();
     setSound();
     highlightUnits(_other_units, _debugInterface);
+    if (_debugInterface != nullptr)
+        _debugInterface->addCircle(_my_unit->position, MOVE_RANGE, {0.0, 0.9, 0.0, 0.05});
 }
 
 void MyUnit::AddNoVisibleUnitsAction()
@@ -128,12 +131,9 @@ model::Vec2 MyUnit::currentMoveVec()
     if (_second_unit_current_obs.has_value())
         obs = removeObstaclesInsideCircle(obs, _second_unit_current_obs->position, _second_unit_current_obs->radius);
 
-    if (!isVecInsideCircle(center, center_point_radius, _my_unit->position))
-    {
-        obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
-        if (obs.empty())
-            return getNextZoneCenter(*_game, *_my_unit);
-    }
+    obs = removeObstaclesInsideCircle(obs, center, center_point_radius);
+    if (obs.empty())
+        return getNextZoneCenter(*_game, *_my_unit);
 
     if (_prev_prev_obs.has_value())
         obs = removeObstaclesInsideCircle(obs, _prev_prev_obs->position, _prev_prev_obs->radius);
@@ -156,7 +156,11 @@ model::Vec2 MyUnit::currentMoveVec()
         return vecDiff(_current_obs->position, _my_unit->position);
     }
 
-    auto closest_obs = closestObstacle(center, obs).value(); 
+    auto pos = center;
+    if (_second_unit.has_value() && _follow_second)
+        pos = _second_unit->position;
+
+    auto closest_obs = closestObstacle(pos, obs).value(); 
     _prev_prev_obs = _prev_obs;
     _current_obs = closest_obs;
 
@@ -187,7 +191,7 @@ void MyUnit::AddFightClosestAction()
     if (_my_unit->ammo[_my_unit->weapon.value()] == 0)
         return;
 
-    auto other_unit = closestUnit(_my_unit->position, _other_units);
+    auto other_unit = lessHpUnit(_my_unit->position, _other_units);
 
     auto unit_range = countRange(_my_unit->position, other_unit->position);
     if (unit_range > weapon_range)
@@ -205,7 +209,6 @@ void MyUnit::AddFightClosestAction()
 
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
 
-    // auto priority = 1 - ( other_unit->shield / _constants.maxShield + other_unit->health / _constants.unitHealth ) / 2 + 0.5;
     auto priority = 1.0;
     auto aim = model::Aim(true);
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
@@ -339,6 +342,7 @@ void MyUnit::AddGetAmmoAction()
 
     auto ammo = std::get<model::Ammo>(closest_ammo->item);
     auto priority = 1.0 - (double) _my_unit->ammo[ammo.weaponTypeIndex] / _constants.weapons[ammo.weaponTypeIndex].maxInventoryAmmo;
+    priority -= 1.0 - ( _my_unit->shield / _constants.maxShield + _my_unit->health / _constants.unitHealth ) / 2;
 
     auto loot_pos = closest_ammo.value().position;
     auto diff_vec = vecDiff(loot_pos, _my_unit->position);
