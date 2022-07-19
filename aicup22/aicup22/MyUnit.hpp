@@ -35,6 +35,7 @@ class MyUnit
         model::Vec2 currentMoveVec();
         std::optional<model::Unit> _my_unit;
         std::optional<model::Unit> _second_unit;
+        std::optional<model::Obstacle> _second_unit_current_obs;
         std::vector<model::Sound> _sounds;
         std::vector<model::Unit> _other_units;
         std::vector<model::Obstacle> _available_obs;
@@ -56,13 +57,14 @@ class MyUnit
     public:
         std::optional<int> ID;
         MyUnit(const model::Constants& constants);
-        void setSecondUnit(const std::optional<model::Unit>& unit);
+        void setSecondUnit(const std::optional<model::Unit>& unit, const std::optional<model::Obstacle>& obs);
         void setGame(const model::Game* game, 
             const model::Unit& my_unit, 
             const std::vector<model::Unit>& other_units, 
             const std::vector<model::Obstacle>& obstacles, 
             DebugInterface* debugInterface);
         std::optional<model::UnitOrder> GetOrder();
+        std::optional<model::Obstacle> GetCurrentObstacle();
 };
 
 #endif

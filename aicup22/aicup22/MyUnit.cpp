@@ -112,8 +112,8 @@ model::Vec2 MyUnit::currentMoveVec()
     auto center_point_radius = _game->zone.nextRadius * CLOSE_TO_REACH;
     auto center = _game->zone.nextCenter;
 
-    if (_second_unit.has_value())
-        obs = removeObstaclesInsideCircle(obs, _second_unit->position, MOVE_RANGE);
+    if (_second_unit_current_obs.has_value())
+        obs = removeObstaclesInsideCircle(obs, _second_unit_current_obs->position, _second_unit_current_obs->radius);
 
     if (!isVecInsideCircle(center, center_point_radius, _my_unit->position))
     {
@@ -214,7 +214,7 @@ std::optional<model::UnitOrder> MyUnit::GetOrder()
     ClearActions();
     auto remainingSpawnTime =  _my_unit->remainingSpawnTime.value_or(-1);
 
-    if (remainingSpawnTime != -1) {
+    if (remainingSpawnTime <= 0.0 ) {
         drawText(vecSum(_my_unit->position, {0.5, 0.5}), std::to_string(remainingSpawnTime), _debugInterface);
         AddFightClosestAction();
         AddUseShieldAction();
@@ -333,11 +333,16 @@ void MyUnit::AddGetAmmoAction()
     _actions.push_back({priority, order});
 }
 
-
-void MyUnit::setSecondUnit(const std::optional<model::Unit>& unit)
+std::optional<model::Obstacle> MyUnit::GetCurrentObstacle()
 {
-    if (unit.has_value())
-        _second_unit = unit.value();
+    return _current_obs;
+}
+
+
+void MyUnit::setSecondUnit(const std::optional<model::Unit>& unit, const std::optional<model::Obstacle>& obs)
+{
+    _second_unit = unit;
+    _second_unit_current_obs = obs;
 }
 
 void MyUnit::ClearActions() 

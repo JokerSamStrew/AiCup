@@ -40,13 +40,13 @@ model::Order MyStrategy::getOrder(const model::Game &game, DebugInterface *debug
         if (canSetUnit(_my_first_unit, my_unit.id))
         {
             _my_first_unit.setGame(&game, my_unit, other_units, _available_obs, debugInterface);
-            _my_second_unit.setSecondUnit(my_unit);
+            _my_second_unit.setSecondUnit(my_unit, _my_first_unit.GetCurrentObstacle());
             getUnitOrder(_my_first_unit);
         }
         else if (canSetUnit(_my_second_unit, my_unit.id))
         {
             _my_second_unit.setGame(&game, my_unit, other_units, _available_obs, debugInterface);
-            _my_second_unit.setSecondUnit(my_unit);
+            _my_second_unit.setSecondUnit(my_unit, _my_second_unit.GetCurrentObstacle());
             getUnitOrder(_my_second_unit);
         }
     }
