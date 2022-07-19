@@ -89,10 +89,7 @@ void MyUnit::setGame(const model::Game* game,
     _prev_shield_level = _my_unit->shield;
     ID = my_unit.id;
     
-    for (const auto& unit : _other_units) {
-        if (!unit.remainingSpawnTime.has_value())
-            _other_units.push_back(unit);
-    }
+    _other_units = other_units;
 
     _debugInterface = debugInterface;
 
@@ -215,9 +212,10 @@ void MyUnit::AddFightClosestAction()
 std::optional<model::UnitOrder> MyUnit::GetOrder()
 {
     ClearActions();
-    drawText(vecSum(_my_unit->position, {0.5, 0.5}), std::to_string(_my_unit->remainingSpawnTime.value_or(-1)), _debugInterface);
-   
-    if (!_my_unit->remainingSpawnTime.has_value()) {
+    auto remainingSpawnTime =  _my_unit->remainingSpawnTime.value_or(-1);
+
+    if (remainingSpawnTime != -1) {
+        drawText(vecSum(_my_unit->position, {0.5, 0.5}), std::to_string(remainingSpawnTime), _debugInterface);
         AddFightClosestAction();
         AddUseShieldAction();
     }
@@ -230,7 +228,7 @@ std::optional<model::UnitOrder> MyUnit::GetOrder()
     if (_actions.empty())
         return std::optional<model::UnitOrder>();
 
-    int max_priority = _actions[0].first;
+    auto max_priority = _actions[0].first;
     std::optional<model::UnitOrder> action = _actions[0].second;
     for (const auto& a : _actions)
     {
@@ -241,6 +239,8 @@ std::optional<model::UnitOrder> MyUnit::GetOrder()
         }
     }
     
+    drawText(vecSum(_my_unit->position, { 0.5, 1.5 }), std::to_string(max_priority), _debugInterface);
+    drawText(vecSum(_my_unit->position, { 0.5, 1 }), action->toString(), _debugInterface);
     return action;
 }
 
