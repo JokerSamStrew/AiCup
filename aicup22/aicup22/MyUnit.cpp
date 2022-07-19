@@ -54,15 +54,19 @@ void MyUnit::setSound()
 
     for (const auto& s : _game->sounds)
     {
-        if (isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
-        {
+        if (!isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
+            continue;
+
+        if (s.typeIndex == _constants.stepsSoundTypeIndex.value_or(-1))
             _sounds.push_back(s);
-        }
     }
 
     for (const auto& s : _current_sounds)
     {
-        if (isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
+        if (!isVecInsideCircle(_my_unit->position, SOUND_RANGE, s.position))
+            continue;
+
+        if (s.typeIndex == _constants.stepsSoundTypeIndex.value_or(-1))
         {
             max_size--;
             _sounds.push_back(s);
@@ -100,7 +104,16 @@ void MyUnit::setGame(const model::Game* game,
 
 void MyUnit::AddNoVisibleUnitsAction()
 {
-    auto currentDirection = model::Vec2(-_my_unit->direction.y, _my_unit->direction.x);
+    auto currentDirection = model::Vec2( 
+            -1 * _my_unit->direction.y,
+            _my_unit->direction.x);
+
+    if (!_sounds.empty())
+    {
+        auto s = closestSound(_my_unit->position, _sounds); 
+        currentDirection = vecDiff(s->position, _my_unit->position);
+    }
+
     std::optional<model::ActionOrder> action;
     model::UnitOrder order(currentMoveVec(), currentDirection, action);
     _actions.push_back({0.0, order});

@@ -41,6 +41,22 @@ std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vect
    return closestUnit;
 }
 
+std::optional<model::Sound> closestSound(const model::Vec2& point, const std::vector<model::Sound>& sounds)
+{
+   double minDistance = std::numeric_limits<double>::max(); 
+   std::optional<model::Sound> closestSound;
+   for (auto s : sounds){
+       double distance = countRange(s.position, point);
+       if (distance < minDistance)
+       {
+          minDistance = distance;
+          closestSound = s;
+       }
+   }
+
+   return closestSound;
+}
+
 void highlightUnits(std::vector<model::Unit>& units, DebugInterface *debugInterface)
 {
     if (debugInterface == nullptr)

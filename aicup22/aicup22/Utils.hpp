@@ -11,7 +11,7 @@ std::pair<std::vector<model::Unit>, std::vector<model::Unit>> getUnits(const mod
 
 std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vector<model::Unit>& units);
 
-std::optional<model::Unit> closestUnit(const model::Vec2& point, const std::vector<model::Unit>& units);
+std::optional<model::Sound> closestSound(const model::Vec2& point, const std::vector<model::Sound>& sounds);
 
 std::optional<model::Obstacle> closestObstacle(const model::Vec2& point, const std::vector<model::Obstacle>& obstacles);
 
