@@ -45,8 +45,7 @@ class MyUnit
         std::vector<std::pair<double, model::UnitOrder>> _actions;
 
         DebugInterface* _debugInterface;
-        double countWeaponRange();
-        void setLoot();
+        double countWeaponRange(); void setLoot();
         void setSound();
         void AddNoVisibleUnitsAction();
         void AddFightClosestAction();
@@ -55,6 +54,7 @@ class MyUnit
         void AddGetAmmoAction();
         void AddGetWeaponAction();
         void ClearActions();
+        model::UnitOrder GetEmptyOrder();
 
     public:
         std::optional<int> ID;

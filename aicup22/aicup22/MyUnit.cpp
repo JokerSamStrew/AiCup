@@ -225,24 +225,33 @@ void MyUnit::AddFightClosestAction()
     _actions.push_back({priority, order});
 }
 
+model::UnitOrder MyUnit::GetEmptyOrder()
+{
+    return model::UnitOrder({0, 0}, _my_unit->direction, std::optional<model::ActionOrder>());
+}
+
 std::optional<model::UnitOrder> MyUnit::GetOrder()
 {
     ClearActions();
     auto remainingSpawnTime =  _my_unit->remainingSpawnTime.value_or(-1);
 
-    if (remainingSpawnTime <= 0.0 ) {
+    if (remainingSpawnTime > 0.0)
+    {
         drawText(vecSum(_my_unit->position, {0.5, 0.5}), std::to_string(remainingSpawnTime), _debugInterface);
-        AddFightClosestAction();
-        AddUseShieldAction();
-        AddGetShieldAction();
-        AddGetAmmoAction();
-        AddGetWeaponAction();
+        return GetEmptyOrder();
     }
 
+    AddFightClosestAction();
+    AddUseShieldAction();
+    AddGetShieldAction();
+    AddGetAmmoAction();
+    AddGetWeaponAction();
     AddNoVisibleUnitsAction();
 
-    if (_actions.empty())
-        return std::optional<model::UnitOrder>();
+
+    if (_actions.empty()) {
+        return GetEmptyOrder();
+    }
 
     auto max_priority = _actions[0].first;
     std::optional<model::UnitOrder> action = _actions[0].second;
