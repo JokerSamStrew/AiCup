@@ -45,6 +45,8 @@ bool isVecInsideCircle(const model::Vec2& circle, double rad, const model::Vec2&
 
 std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, double rad);
 
+std::optional<model::Unit> findUnit(const std::vector<model::Unit>& units, int id); 
+
 std::vector<model::Unit> getUnitsInsideCircle(const std::vector<model::Unit>& units, const model::Vec2& circle_pos, double rad);
 
 std::vector<model::Obstacle> removeObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, double rad);

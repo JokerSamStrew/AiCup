@@ -209,13 +209,23 @@ void MyUnit::AddFightClosestAction()
     if (_my_unit->ammo[_my_unit->weapon.value()] == 0)
         return;
 
+    _current_target.reset();
     auto units_in_range = getUnitsInsideCircle(_other_units, _my_unit->position, weapon_range);
-    auto other_unit = lessHpUnit(_my_unit->position, units_in_range);
-    if (!other_unit.has_value())
+    if (units_in_range.empty())
         return;
 
-    auto unit_range = countRange(_my_unit->position, other_unit->position);
+    std::optional<model::Unit> other_unit;
+   
+    if (_second_unit_current_target.has_value())
+        other_unit = findUnit(units_in_range, _second_unit_current_target->id);
 
+    if (!other_unit.has_value()){
+        other_unit = lessHpUnit(_my_unit->position, units_in_range);
+    }
+
+    _current_target = other_unit;
+
+    auto unit_range = countRange(_my_unit->position, other_unit->position);
     auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
     auto speed = weapon_properties.projectileSpeed;
     auto time = unit_range / speed;
