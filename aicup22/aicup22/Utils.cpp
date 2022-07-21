@@ -158,6 +158,28 @@ std::vector<model::Obstacle> getObstaclesInsideCircle(const std::vector<model::O
     return result;
 }
 
+std::optional<model::Unit> findUnit(const std::vector<model::Unit>& units, int id)
+{
+    for (const auto& unit : units)
+        if (unit.id == id)
+            return unit;
+
+    return std::optional<model::Unit>();
+}
+
+std::vector<model::Unit> getUnitsInsideCircle(const std::vector<model::Unit>& units, const model::Vec2& circle_pos, double rad)
+{
+    std::vector<model::Unit> result;
+    for (auto unit : units)
+    {
+        if (isVecInsideCircle(circle_pos, rad, unit.position))
+            result.push_back(unit);
+    }
+
+    return result;
+}
+
+
 std::vector<model::Obstacle> removeObstaclesInsideCircle(const std::vector<model::Obstacle>& obstacles, const model::Vec2& circle_pos, double rad)
 {
     std::vector<model::Obstacle> result;

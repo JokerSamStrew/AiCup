@@ -195,6 +195,8 @@ double MyUnit::countWeaponRange()
     return speed * time * WEAPON_COEF;
 }
 
+
+
 void MyUnit::AddFightClosestAction()
 {
     if (_other_units.empty())
@@ -207,15 +209,17 @@ void MyUnit::AddFightClosestAction()
     if (_my_unit->ammo[_my_unit->weapon.value()] == 0)
         return;
 
-    auto other_unit = lessHpUnit(_my_unit->position, _other_units);
+    auto units_in_range = getUnitsInsideCircle(_other_units, _my_unit->position, weapon_range);
+    auto other_unit = lessHpUnit(_my_unit->position, units_in_range);
+    if (!other_unit.has_value())
+        return;
 
     auto unit_range = countRange(_my_unit->position, other_unit->position);
-    if (unit_range > weapon_range)
-        return;
 
     auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
     auto speed = weapon_properties.projectileSpeed;
-    auto time = unit_range / speed; 
+    auto time = unit_range / speed;
+    time *= WEAPON_COEF;
 
     auto direction = vecDiff(other_unit->position, _my_unit->position);
     direction = vecSum(direction, {other_unit->velocity.x * time, other_unit->velocity.y * time});
