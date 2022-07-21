@@ -157,7 +157,7 @@ model::Vec2 MyUnit::currentMoveVec()
     }
 
     auto pos = center;
-    if (_second_unit.has_value() && _follow_second)
+    if (_second_unit.has_value() && _follow_second && isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, _second_unit->position))
         pos = _second_unit->position;
 
     auto closest_obs = closestObstacle(pos, obs).value(); 
@@ -234,11 +234,11 @@ std::optional<model::UnitOrder> MyUnit::GetOrder()
         drawText(vecSum(_my_unit->position, {0.5, 0.5}), std::to_string(remainingSpawnTime), _debugInterface);
         AddFightClosestAction();
         AddUseShieldAction();
+        AddGetShieldAction();
+        AddGetAmmoAction();
+        AddGetWeaponAction();
     }
 
-    AddGetShieldAction();
-    AddGetAmmoAction();
-    AddGetWeaponAction();
     AddNoVisibleUnitsAction();
 
     if (_actions.empty())
@@ -257,6 +257,8 @@ std::optional<model::UnitOrder> MyUnit::GetOrder()
     
     drawText(vecSum(_my_unit->position, { 0.5, 1.5 }), std::to_string(max_priority), _debugInterface);
     drawText(vecSum(_my_unit->position, { 0.5, 1 }), action->toString(), _debugInterface);
+
+    _second_unit.reset();
     return action;
 }
 

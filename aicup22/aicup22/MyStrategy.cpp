@@ -6,7 +6,7 @@
 #include <Stream.hpp>
 #include "Utils.hpp"
 
-MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants, true), _my_second_unit(constants, false) 
+MyStrategy::MyStrategy(const model::Constants &constants) : _constants(constants), _my_first_unit(constants, false), _my_second_unit(constants, true) 
 {
     for (auto obs : _constants.obstacles){
         if (!obs.canShootThrough)
