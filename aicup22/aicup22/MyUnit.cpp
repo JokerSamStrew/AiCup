@@ -103,6 +103,7 @@ void MyUnit::setGame(const model::Game* game,
     highlightUnits(_other_units, _debugInterface);
     if (_debugInterface != nullptr)
         _debugInterface->addCircle(_my_unit->position, MOVE_RANGE, {0.0, 0.9, 0.0, 0.05});
+
 }
 
 void MyUnit::AddNoVisibleUnitsAction()
@@ -127,6 +128,11 @@ model::Vec2 MyUnit::currentMoveVec()
     auto obs = getObstaclesInsideCircle(_available_obs, _my_unit->position, MOVE_RANGE);
     auto center_point_radius = _game->zone.nextRadius * CLOSE_TO_REACH;
     auto center = _game->zone.nextCenter;
+    if (_debugInterface != nullptr)
+    {
+        _debugInterface->addRing(_game->zone.nextCenter, center_point_radius, 0.5, {0.2, 0.0, 0.0, 0.4});
+        _debugInterface->addRing(_game->zone.currentCenter, _game->zone.currentRadius * EDGE_COEF, 0.5, {0.2, 0.0, 0.0, 0.4});
+    }
 
     if (_second_unit_current_obs.has_value())
         obs = removeObstaclesInsideCircle(obs, _second_unit_current_obs->position, _second_unit_current_obs->radius);
@@ -148,6 +154,15 @@ model::Vec2 MyUnit::currentMoveVec()
 
     highlightObstacles(obs, _debugInterface);
 
+    auto pos = center;
+    if (_second_unit.has_value() && _follow_second && isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, _second_unit->position))
+    {
+        pos = _second_unit->position;
+    }
+
+    if (_debugInterface != nullptr)
+        _debugInterface->addCircle(pos, 0.5, {0.0, 0.0, 0.8, 0.7});
+
     if (_current_obs.has_value() 
         && !isVecInsideCircle(_current_obs->position, _current_obs->radius + NEAR_OBS, _my_unit->position)) 
     {
@@ -155,10 +170,6 @@ model::Vec2 MyUnit::currentMoveVec()
         highlightObstacle(*_current_obs, _debugInterface);
         return vecDiff(_current_obs->position, _my_unit->position);
     }
-
-    auto pos = center;
-    if (_second_unit.has_value() && _follow_second && isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, _second_unit->position))
-        pos = _second_unit->position;
 
     auto closest_obs = closestObstacle(pos, obs).value(); 
     _prev_prev_obs = _prev_obs;
@@ -209,7 +220,7 @@ void MyUnit::AddFightClosestAction()
 
     drawDirectionArc(*_my_unit, weapon_range, _debugInterface); 
 
-    auto priority = 1.0;
+    auto priority = 2.0;
     auto aim = model::Aim(true);
     model::UnitOrder order (currentMoveVec(), direction, std::make_optional<model::Aim>(aim));
     auto aim_pos = vecSum(_my_unit->position, model::Vec2( _my_unit->direction.x * unit_range, _my_unit->direction.y * unit_range ));
