@@ -374,16 +374,11 @@ void MyUnit::AddGetAmmoAction()
     _actions.push_back({priority, order});
 }
 
-std::optional<model::Obstacle> MyUnit::GetCurrentObstacle()
+void setSecondUnit(MyUnit& my_unit, const std::optional<MyUnit>& unit)
 {
-    return _current_obs;
-}
-
-
-void MyUnit::setSecondUnit(const std::optional<model::Unit>& unit, const std::optional<model::Obstacle>& obs)
-{
-    _second_unit = unit;
-    _second_unit_current_obs = obs;
+    my_unit._second_unit = unit->_my_unit;
+    my_unit._second_unit_current_obs = unit->_current_obs;
+    my_unit._second_unit_current_target = unit->_current_target;
 }
 
 void MyUnit::ClearActions() 
