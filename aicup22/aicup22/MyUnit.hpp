@@ -14,7 +14,7 @@
 #define PICKUP_RANGE 10.0
 #define SOUND_RANGE 20.0
 #define EDGE_COEF 0.75
-#define WEAPON_COEF 0.65 
+#define WEAPON_COEF 0.80 
 #define MOVE_COEF 100000.0 
 #define CLOSE_TO_REACH 0.4 
 #define MIN_EDGE_RAD 5.0

@@ -98,6 +98,8 @@ void MyUnit::setGame(const model::Game* game,
 
     _debugInterface = debugInterface;
 
+
+
     setLoot();
     setSound();
     highlightUnits(_other_units, _debugInterface);
@@ -155,13 +157,16 @@ model::Vec2 MyUnit::currentMoveVec()
     highlightObstacles(obs, _debugInterface);
 
     auto pos = center;
-    if (_second_unit.has_value() && _follow_second && isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, _second_unit->position))
+    if (_second_unit.has_value() && _follow_second && !_second_unit->remainingSpawnTime.has_value() && isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius, _second_unit->position))
     {
         pos = _second_unit->position;
     }
 
     if (_debugInterface != nullptr)
-        _debugInterface->addCircle(pos, 0.5, {0.0, 0.0, 0.8, 0.7});
+        _debugInterface->addCircle(pos, 0.3, {0.8, 0.0, 0.8, 0.5});
+
+    if (!isVecInsideCircle(_game->zone.currentCenter, _game->zone.currentRadius * EDGE_COEF, _current_obs->position))
+        _current_obs.reset();
 
     if (_current_obs.has_value() 
         && !isVecInsideCircle(_current_obs->position, _current_obs->radius + NEAR_OBS, _my_unit->position)) 
@@ -211,9 +216,6 @@ void MyUnit::AddFightClosestAction()
     auto weapon_properties = _constants.weapons[_my_unit->weapon.value()];
     auto speed = weapon_properties.projectileSpeed;
     auto time = unit_range / speed; 
-    if (_my_unit->aim < 1)
-        time += weapon_properties.aimTime;
-    time *= WEAPON_COEF;
 
     auto direction = vecDiff(other_unit->position, _my_unit->position);
     direction = vecSum(direction, {other_unit->velocity.x * time, other_unit->velocity.y * time});
